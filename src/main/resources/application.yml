@@ -1,0 +1,19 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: rating-microservice
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cab-aggregator-db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 98479847
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
