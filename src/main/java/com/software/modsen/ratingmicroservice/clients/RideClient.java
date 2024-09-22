@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "ride-microservice", url = "http://localhost:8083/api/ride")
 public interface RideClient {
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     ResponseEntity<Ride> getRideById(@PathVariable("id") long id);
 }

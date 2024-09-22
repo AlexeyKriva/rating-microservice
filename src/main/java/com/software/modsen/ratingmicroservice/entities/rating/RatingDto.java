@@ -12,10 +12,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class RatingDto {
     @NotNull(message = "Ride id cannot be null.")
     @JsonProperty("ride_id")

@@ -51,6 +51,7 @@ public class RatingService {
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
         return ratingRepository.save(ratingFromDb.map(rating -> {
             rating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
+            rating.setId(id);
             rating.setRide(rideFromDb.getBody());
 
             return rating;

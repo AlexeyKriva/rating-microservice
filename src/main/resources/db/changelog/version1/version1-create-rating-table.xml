@@ -15,7 +15,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="ride_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_rating_passenger" references="passenger(id)"/>
+                <constraints nullable="false" foreignKeyName="fk_rating_ride" references="ride(id)"/>
             </column>
             <column name="rating_value" type="tinyint">
                 <constraints nullable="false" checkConstraint="rating_value IN (1, 2, 3, 4, 5)"/>

@@ -29,8 +29,9 @@ public class RatingController {
     }
 
     @PostMapping
-    public ResponseEntity<Rating> saveRating(@RequestParam Source ratingSource,
-                                             @Valid RatingDto ratingDto) {
+    public ResponseEntity<Rating> saveRating(@RequestParam("ratingSource") Source ratingSource,
+                                             @Valid @RequestBody RatingDto ratingDto) {
+        System.out.println(ratingDto);
         return ResponseEntity.ok(ratingService.saveRating(ratingSource, ratingDto));
     }
 
