@@ -4,10 +4,15 @@ import com.software.modsen.ratingmicroservice.clients.RideClient;
 import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
+import com.software.modsen.ratingmicroservice.entities.rating.RatingInfoDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
+import com.software.modsen.ratingmicroservice.observer.RatingObserver;
+import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,8 @@ public class RatingService {
     private RatingRepository ratingRepository;
     @Autowired
     private RideClient rideClient;
+    @Autowired
+    private RatingSubject ratingSubject;
     private final RatingMapper RATING_MAPPER = RatingMapper.INSTANCE;
 
     public List<Rating> getAllRatings() {
@@ -33,10 +40,12 @@ public class RatingService {
                 .orElseThrow(() -> new RuntimeException());
     }
 
-    public Rating saveRating(RatingDto ratingDto) {
+    public Rating saveRating(Source ratingSource, RatingDto ratingDto) {
         Rating newRating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
         newRating.setRide(rideFromDb.getBody());
+        ratingSubject.notifyObserver(new RatingInfoDto(ratingSource, newRating));
+
         return ratingRepository.save(newRating);
     }
 
