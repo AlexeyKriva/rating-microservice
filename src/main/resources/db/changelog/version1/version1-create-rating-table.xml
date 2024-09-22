@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="version1-1" author="postgres">
+    <changeSet id="version1-6" author="postgres">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="rating"/>
@@ -14,11 +14,8 @@
             <column name="id" type="serial">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="passenger_id" type="bigint">
+            <column name="ride_id" type="bigint">
                 <constraints nullable="false" foreignKeyName="fk_rating_passenger" references="passenger(id)"/>
-            </column>
-            <column name="driver_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_rating_driver" references="driver(id)"/>
             </column>
             <column name="rating_value" type="tinyint">
                 <constraints nullable="false" checkConstraint="rating_value IN (1, 2, 3, 4, 5)"/>
@@ -29,7 +26,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="version1-2" author="postgres">
+    <changeSet id="version1-7" author="postgres">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="rating_source"/>
@@ -48,28 +45,4 @@
             </column>
         </createTable>
     </changeSet>
-
-    <changeSet id="version1-3" author="postgres">
-        <preConditions onFail="MARK_RAN">
-            <columnExists columnName="passenger_id" tableName="rating"/>
-            <columnExists columnName="driver_id" tableName="rating"/>
-        </preConditions>
-
-        <dropColumn tableName="rating" columnName="passenger_id"/>
-        <dropColumn tableName="rating" columnName="driver_id"/>
-    </changeSet>
-
-    <changeSet id="version1-4" author="postgres">
-        <preConditions onFail="MARK_RAN">
-            <columnExists columnName="rating_id" tableName="rating"/>
-        </preConditions>
-
-        <dropColumn tableName="rating" columnName="rating_id"/>
-        <addColumn tableName="rating">
-            <column name="ride_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_rating_ride" references="ride(id)"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
 </databaseChangeLog>
