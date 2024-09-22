@@ -24,7 +24,7 @@ public class Rating {
     @JoinColumn(name = "ride_id")
     private Ride ride;
     @Column(name = "rating_value", nullable = false)
-    private int ratingValue;
+    private Integer ratingValue;
     @Column(name = "comment")
     private String comment;
 }

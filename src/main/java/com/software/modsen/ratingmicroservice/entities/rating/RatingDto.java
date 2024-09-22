@@ -25,7 +25,7 @@ public class RatingDto {
     @NotNull(message = "Rating value cannot be null.")
     @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")
     @JsonProperty("rating_value")
-    private int ratingValue;
+    private Integer ratingValue;
     @JsonProperty("comment")
     private String comment;
 }

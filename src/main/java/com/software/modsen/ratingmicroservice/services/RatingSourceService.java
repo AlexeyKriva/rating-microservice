@@ -4,12 +4,16 @@ import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourceDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourcePatchDto;
+import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException;
+import com.software.modsen.ratingmicroservice.exceptions.RatingSourceNotFoundException;
 import com.software.modsen.ratingmicroservice.mappers.RatingSourceMapper;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +33,7 @@ public class RatingSourceService {
     public RatingSource getRatingSourceById(long id) {
         Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.getRatingSourceById(id);
         return ratingSourceFromDb.orElseThrow(
-                () -> new RuntimeException()
+                () -> new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE)
         );
     }
 
@@ -45,10 +49,10 @@ public class RatingSourceService {
                 return ratingSourceRepository.save(updatingRatingSource);
             }
 
-            throw new RuntimeException();
+            throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);
         }
 
-        throw new RuntimeException();
+        throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
     }
 
     public RatingSource patchRatingSource(long id, RatingSourcePatchDto ratingSourcePatchDto) {
@@ -66,17 +70,17 @@ public class RatingSourceService {
                 return ratingSourceRepository.save(updatingRatingSource);
             }
 
-            throw new RuntimeException();
+            throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);
         }
 
-        throw new RuntimeException();
+        throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
     }
 
     public void deleteRatingSourceById(long id) {
         Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.getRatingSourceById(id);
         ratingSourceFromDb.ifPresentOrElse(
                 ratingSource -> ratingSourceRepository.deleteById(id),
-                () -> new RuntimeException()
+                () -> { throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);}
         );
     }
 }
