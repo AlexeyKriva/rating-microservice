@@ -1,0 +1,77 @@
+package com.software.modsen.ratingmicroservice.services;
+
+import com.software.modsen.ratingmicroservice.clients.RideClient;
+import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
+import com.software.modsen.ratingmicroservice.entities.rating.Rating;
+import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
+import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
+import com.software.modsen.ratingmicroservice.entities.ride.Ride;
+import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
+import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class RatingService {
+    @Autowired
+    private RatingRepository ratingRepository;
+    @Autowired
+    private RideClient rideClient;
+    private final RatingMapper RATING_MAPPER = RatingMapper.INSTANCE;
+
+    public List<Rating> getAllRatings() {
+        return ratingRepository.findAll();
+    }
+
+    public Rating getRatingById(long id) {
+        return ratingRepository.getRatingById(id)
+                .orElseThrow(() -> new RuntimeException());
+    }
+
+    public Rating saveRating(RatingDto ratingDto) {
+        Rating newRating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
+        ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
+        newRating.setRide(rideFromDb.getBody());
+        return ratingRepository.save(newRating);
+    }
+
+    public Rating updateRating(long id, RatingDto ratingDto) {
+        Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+        ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
+        return ratingRepository.save(ratingFromDb.map(rating -> {
+            rating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
+            rating.setRide(rideFromDb.getBody());
+
+            return rating;
+        }).orElseThrow(() -> new RuntimeException()));
+    }
+
+    public Rating patchRating(long id, RatingPatchDto ratingPatchDto) {
+        Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+        if (ratingFromDb.isPresent()) {
+            Rating updatingRating = ratingFromDb.get();
+            RATING_MAPPER.updateRatingFromRatingPatchDto(ratingPatchDto, updatingRating);
+            if (ratingPatchDto.getRideId() != null) {
+                ResponseEntity<Ride> rideFromDb = rideClient.getRideById(id);
+                updatingRating.setRide(rideFromDb.getBody());
+            }
+
+            return ratingRepository.save(updatingRating);
+        }
+
+        throw new RuntimeException();
+    }
+
+    public void deleteRatingById(long id) {
+        Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+        ratingFromDb.ifPresentOrElse(
+                rating -> ratingRepository.deleteById(id),
+                () -> {throw new RuntimeException();}
+        );
+    }
+}
