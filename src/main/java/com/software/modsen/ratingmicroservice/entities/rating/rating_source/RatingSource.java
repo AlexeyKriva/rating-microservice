@@ -17,9 +17,9 @@ public class RatingSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rating_id")
-    private List<Rating> rating;
+    private Rating rating;
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)
     private Source source;

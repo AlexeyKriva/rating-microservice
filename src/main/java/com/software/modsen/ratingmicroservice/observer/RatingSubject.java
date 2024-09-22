@@ -16,7 +16,7 @@ public class RatingSubject {
         ratingObservers.remove(ratingObserver);
     }
 
-    public void notifyObserver(RatingInfoDto ratingInfoDto) {
+    public void notifyObservers(RatingInfoDto ratingInfoDto) {
         for (RatingObserver ratingObserver: ratingObservers) {
             ratingObserver.updateRatingSource(ratingInfoDto);
         }

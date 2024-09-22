@@ -15,7 +15,7 @@ public class SourceObserver implements RatingObserver {
     @Override
     public void updateRatingSource(RatingInfoDto ratingInfoDto) {
         RatingSource ratingSource = new RatingSource();
-        ratingSource.setRating(List.of(ratingInfoDto.getRating()));
+        ratingSource.setRating(ratingInfoDto.getRating());
         ratingSource.setSource(ratingInfoDto.getRatingSource());
 
         ratingSourceRepository.save(ratingSource);
