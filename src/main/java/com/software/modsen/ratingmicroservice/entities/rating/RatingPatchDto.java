@@ -9,10 +9,8 @@ import org.hibernate.validator.constraints.Range;
 @Getter
 @AllArgsConstructor
 public class RatingPatchDto {
-    @JsonProperty("passenger_id")
-    private Long passengerId;
-    @JsonProperty("driver_id")
-    private Long driverId;
+    @JsonProperty("ride_id")
+    private Long rideId;
     @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")
     @JsonProperty("rating_value")
     private int ratingValue;

@@ -2,6 +2,7 @@ package com.software.modsen.ratingmicroservice.entities.rating;
 
 import com.software.modsen.ratingmicroservice.entities.driver.Driver;
 import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
+import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,11 +18,8 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "passnger_id")
-    private Passenger passenger;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
+    @JoinColumn(name = "rating_id")
+    private Ride ride;
     @Column(name = "rating_value", nullable = false)
     private int ratingValue;
     @Column(name = "comment")

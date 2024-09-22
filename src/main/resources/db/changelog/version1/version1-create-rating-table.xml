@@ -4,7 +4,7 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="version1-1" author="postgres">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="rating"/>
             </not>
@@ -30,7 +30,7 @@
     </changeSet>
 
     <changeSet id="version1-2" author="postgres">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="rating_source"/>
             </not>
@@ -47,6 +47,29 @@
                 <constraints nullable="false" checkConstraint="rating_value IN (PASSENGER, DRIVER)"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="version1-3" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="passenger_id" tableName="rating"/>
+            <columnExists columnName="driver_id" tableName="rating"/>
+        </preConditions>
+
+        <dropColumn tableName="rating" columnName="passenger_id"/>
+        <dropColumn tableName="rating" columnName="driver_id"/>
+    </changeSet>
+
+    <changeSet id="version1-4" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <columnExists columnName="rating_id" tableName="rating"/>
+        </preConditions>
+
+        <dropColumn tableName="rating" columnName="rating_id"/>
+        <addColumn tableName="rating">
+            <column name="ride_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_rating_ride" references="ride(id)"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
