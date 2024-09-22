@@ -20,7 +20,7 @@ public class Rating {
     @JoinColumn(name = "passnger_id")
     private Passenger passenger;
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "passnger_id")
+    @JoinColumn(name = "driver_id")
     private Driver driver;
     @Column(name = "rating_value", nullable = false)
     private int ratingValue;
