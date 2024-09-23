@@ -28,6 +28,20 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getRatingById(id));
     }
 
+    @GetMapping("/passenger/{id}")
+    public ResponseEntity<List<Rating>> getAllRatingsByPassengerIdAndBySource(@PathVariable("id") long id,
+                                                                              @RequestParam("ratingSource")
+                                                                              Source ratingSource) {
+        return ResponseEntity.ok(ratingService.getAllRatingsByPassengerIdAndBySource(id, ratingSource));
+    }
+
+    @GetMapping("/driver/{id}")
+    public ResponseEntity<List<Rating>> getAllRatingsByDriverIdAndBySource(@PathVariable("id") long id,
+                                                                              @RequestParam("ratingSource")
+                                                                              Source ratingSource) {
+        return ResponseEntity.ok(ratingService.getAllRatingsByDriverIdAndBySource(id, ratingSource));
+    }
+
     @PostMapping
     public ResponseEntity<Rating> saveRating(@RequestParam("ratingSource") Source ratingSource,
                                              @Valid @RequestBody RatingDto ratingDto) {

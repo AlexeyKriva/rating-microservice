@@ -14,4 +14,6 @@ public class ErrorMessage {
     public static final String FEIGN_CANNOT_CONNECT_MESSAGE = "Unsuccessful attempt to connect to the service for" +
             " rides. ";
     public static final String MISSING_REQUIRED_PARAMETERS_MESSAGE = "Missing required parameters: ";
+    public static final String PASSENGER_HAS_NOT_RATINGS_MESSAGE = "The passenger has not left any ratings yet.";
+    public static final String DRIVER_HAS_NOT_RATINGS_MESSAGE = "The driver has not left any ratings yet.";
 }

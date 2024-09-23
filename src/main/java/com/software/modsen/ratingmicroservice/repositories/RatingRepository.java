@@ -4,9 +4,11 @@ import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
-    Optional<Rating> getRatingById(long id);
+    Optional<Rating> findRatingById(long id);
+    List<Rating> findRatingsByRideId(long rideId);
 }

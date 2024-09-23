@@ -92,4 +92,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(MISSING_REQUIRED_PARAMETERS_MESSAGE + exception.getParameterName(),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(PassengerHasNotRatingsException.class)
+    public ResponseEntity<String> passengerHasNotRatingsExceptionHandler(PassengerHasNotRatingsException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DriverHasNotRatingsException.class)
+    public ResponseEntity<String> driverHasNotRatingsExceptionHandler(DriverHasNotRatingsException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

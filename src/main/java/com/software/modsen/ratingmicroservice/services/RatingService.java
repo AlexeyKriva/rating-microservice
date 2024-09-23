@@ -5,18 +5,23 @@ import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingInfoDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
+import com.software.modsen.ratingmicroservice.exceptions.DriverHasNotRatingsException;
+import com.software.modsen.ratingmicroservice.exceptions.PassengerHasNotRatingsException;
 import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException;
 import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
 import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
+import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +29,8 @@ import java.util.Optional;
 public class RatingService {
     @Autowired
     private RatingRepository ratingRepository;
+    @Autowired
+    private RatingSourceRepository ratingSourceRepository;
     @Autowired
     private RideClient rideClient;
     @Autowired
@@ -35,8 +42,46 @@ public class RatingService {
     }
 
     public Rating getRatingById(long id) {
-        return ratingRepository.getRatingById(id)
+        return ratingRepository.findRatingById(id)
                 .orElseThrow(() -> new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE));
+    }
+
+    public List<Rating> getAllRatingsByPassengerIdAndBySource(long passengerId, Source ratingSource) {
+        List<Ride> ridesFromDb = rideClient.getAllRidesByPassengerId(passengerId).getBody();
+        List<Rating> passengerRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
+
+        if (passengerRatings.isEmpty()) {
+            throw new PassengerHasNotRatingsException(PASSENGER_HAS_NOT_RATINGS_MESSAGE);
+        }
+
+        return passengerRatings;
+    }
+
+    public List<Rating> getAllRatingsByDriverIdAndBySource(long driverId, Source ratingSource) {
+        List<Ride> ridesFromDb = rideClient.getAllRidesByDriverId(driverId).getBody();
+        List<Rating> driverRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
+
+        if (driverRatings.isEmpty()) {
+            throw new DriverHasNotRatingsException(DRIVER_HAS_NOT_RATINGS_MESSAGE);
+        }
+
+        return driverRatings;
+    }
+
+    private List<Rating> getAllRatingsBySource(Source ratingSource, List<Ride> ridesFromDb) {
+        List<Rating> userRatings = new ArrayList<>();
+        for (Ride rideFromDb : ridesFromDb) {
+            List<Rating> ratingsFromDb = ratingRepository.findRatingsByRideId(rideFromDb.getId());
+            for (Rating ratingFromDb: ratingsFromDb) {
+                Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceByRatingIdAndSource(
+                        ratingFromDb.getId(), ratingSource);
+                if (ratingSourceFromDb.isPresent()) {
+                    userRatings.add(ratingFromDb);
+                }
+            }
+        }
+
+        return userRatings;
     }
 
     public Rating saveRating(Source ratingSource, RatingDto ratingDto) {
