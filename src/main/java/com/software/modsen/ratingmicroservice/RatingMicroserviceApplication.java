@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableWebMvc
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.software.modsen.ratingmicroservice.clients")
 public class RatingMicroserviceApplication {
 
     public static void main(String[] args) {
