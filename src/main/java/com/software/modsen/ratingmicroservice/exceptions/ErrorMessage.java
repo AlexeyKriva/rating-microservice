@@ -11,8 +11,8 @@ public class ErrorMessage {
             " check the URL and try again.";
     public static final String INVALID_JSON_FORMAT = "Invalid json format.";
     public static final String DATA_INTEGRITY_VIOLENT_MESSAGE = "Not all data entered.";
-    public static final String FEIGN_CANNOT_CONNECT_MESSAGE = "Unsuccessful attempt to connect to the service for" +
-            " rides. ";
+    public static final String FEIGN_CANNOT_CONNECT_MESSAGE = "Unsuccessful attempt to connect to the services for" +
+            " rides, passenger or driver. ";
     public static final String MISSING_REQUIRED_PARAMETERS_MESSAGE = "Missing required parameters: ";
     public static final String PASSENGER_HAS_NOT_RATINGS_MESSAGE = "The passenger has not left any ratings yet.";
     public static final String DRIVER_HAS_NOT_RATINGS_MESSAGE = "The driver has not left any ratings yet.";
