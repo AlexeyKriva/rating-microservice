@@ -1,0 +1,48 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="version1-6" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="rating"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="rating">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="ride_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_rating_ride" references="ride(id)"/>
+            </column>
+            <column name="rating_value" type="tinyint">
+                <constraints nullable="false" checkConstraint="rating_value IN (1, 2, 3, 4, 5)"/>
+            </column>
+            <column name="comment" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="version1-7" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="rating_source"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="rating_source">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="rating_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_rating_source_rating" references="rating(id)"/>
+            </column>
+            <column name="source" type="varchar(15)">
+                <constraints nullable="false" checkConstraint="rating_value IN (PASSENGER, DRIVER)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
