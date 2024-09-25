@@ -15,7 +15,7 @@ import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
 import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +26,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class RatingService {
-    @Autowired
     private RatingRepository ratingRepository;
-    @Autowired
     private RatingSourceRepository ratingSourceRepository;
-    @Autowired
     private RideClient rideClient;
-    @Autowired
     private RatingSubject ratingSubject;
     private final RatingMapper RATING_MAPPER = RatingMapper.INSTANCE;
 
@@ -70,11 +67,14 @@ public class RatingService {
 
     private List<Rating> getAllRatingsBySource(Source ratingSource, List<Ride> ridesFromDb) {
         List<Rating> userRatings = new ArrayList<>();
+
         for (Ride rideFromDb : ridesFromDb) {
             List<Rating> ratingsFromDb = ratingRepository.findRatingsByRideId(rideFromDb.getId());
+
             for (Rating ratingFromDb: ratingsFromDb) {
                 Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceByRatingIdAndSource(
                         ratingFromDb.getId(), ratingSource);
+
                 if (ratingSourceFromDb.isPresent()) {
                     userRatings.add(ratingFromDb);
                 }
@@ -86,8 +86,10 @@ public class RatingService {
 
     public Rating saveRating(Source ratingSource, RatingDto ratingDto) {
         Rating newRating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
+
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
         newRating.setRide(rideFromDb.getBody());
+
         ratingRepository.save(newRating);
         ratingSubject.notifyObservers(new RatingInfoDto(ratingSource, newRating));
 
@@ -96,6 +98,7 @@ public class RatingService {
 
     public Rating updateRating(long id, RatingDto ratingDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingDto.getRideId());
 
         return ratingRepository.save(ratingFromDb.map(rating -> {
@@ -109,9 +112,11 @@ public class RatingService {
 
     public Rating patchRating(long id, RatingPatchDto ratingPatchDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+
         if (ratingFromDb.isPresent()) {
             Rating updatingRating = ratingFromDb.get();
             RATING_MAPPER.updateRatingFromRatingPatchDto(ratingPatchDto, updatingRating);
+
             if (ratingPatchDto.getRideId() != null) {
                 ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingPatchDto.getRideId());
                 updatingRating.setRide(rideFromDb.getBody());
@@ -125,6 +130,7 @@ public class RatingService {
 
     public void deleteRatingById(long id) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
+
         ratingFromDb.ifPresentOrElse(
                 rating -> ratingRepository.deleteById(id),
                 () -> {

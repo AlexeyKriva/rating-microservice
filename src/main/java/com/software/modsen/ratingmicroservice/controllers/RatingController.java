@@ -6,7 +6,7 @@ import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
 import com.software.modsen.ratingmicroservice.services.RatingService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +14,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/rating", produces = "application/json")
+@AllArgsConstructor
 public class RatingController {
-    @Autowired
     private RatingService ratingService;
 
     @GetMapping

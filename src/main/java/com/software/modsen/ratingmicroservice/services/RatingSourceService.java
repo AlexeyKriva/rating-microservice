@@ -9,7 +9,7 @@ import com.software.modsen.ratingmicroservice.exceptions.RatingSourceNotFoundExc
 import com.software.modsen.ratingmicroservice.mappers.RatingSourceMapper;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
@@ -18,10 +18,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class RatingSourceService {
-    @Autowired
     private RatingSourceRepository ratingSourceRepository;
-    @Autowired
     private RatingRepository ratingRepository;
     private final RatingSourceMapper RATING_SOURCE_MAPPER = RatingSourceMapper.INSTANCE;
 
@@ -31,6 +30,7 @@ public class RatingSourceService {
 
     public RatingSource getRatingSourceById(long id) {
         Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
+
         return ratingSourceFromDb.orElseThrow(
                 () -> new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE)
         );
@@ -38,10 +38,14 @@ public class RatingSourceService {
 
     public RatingSource updateRatingSource(long id, RatingSourceDto ratingSourceDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingSourceDto.getRatingId());
+
         if (ratingFromDb.isPresent()) {
             Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
+
             if (ratingSourceFromDb.isPresent()) {
-                RatingSource updatingRatingSource = RATING_SOURCE_MAPPER.fromRatingSourceDtoToRatingSource(ratingSourceDto);
+                RatingSource updatingRatingSource =
+                        RATING_SOURCE_MAPPER.fromRatingSourceDtoToRatingSource(ratingSourceDto);
+
                 updatingRatingSource.setId(id);
                 updatingRatingSource.setRating(ratingFromDb.get());
 
@@ -56,12 +60,16 @@ public class RatingSourceService {
 
     public RatingSource patchRatingSource(long id, RatingSourcePatchDto ratingSourcePatchDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingSourcePatchDto.getRatingId());
+
         if (ratingFromDb.isPresent()) {
             Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
+
             if (ratingSourceFromDb.isPresent()) {
                 RatingSource updatingRatingSource = ratingSourceFromDb.get();
+
                 RATING_SOURCE_MAPPER.updateRatingSourceFromRatingSourcePatchDto(ratingSourcePatchDto,
                         updatingRatingSource);
+
                 if (ratingSourcePatchDto.getRatingId() != null) {
                     updatingRatingSource.setRating(ratingFromDb.get());
                 }
@@ -77,6 +85,7 @@ public class RatingSourceService {
 
     public void deleteRatingSourceById(long id) {
         Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
+
         ratingSourceFromDb.ifPresentOrElse(
                 ratingSource -> ratingSourceRepository.deleteById(id),
                 () -> { throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);}

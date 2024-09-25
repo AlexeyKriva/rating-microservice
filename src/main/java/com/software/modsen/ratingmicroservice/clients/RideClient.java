@@ -12,8 +12,10 @@ import java.util.List;
 public interface RideClient {
     @GetMapping("/{id}")
     ResponseEntity<Ride> getRideById(@PathVariable("id") long id);
+
     @GetMapping("/passenger/{id}")
     ResponseEntity<List<Ride>> getAllRidesByPassengerId(@PathVariable("id") long passengerId);
+
     @GetMapping("/driver/{id}")
     ResponseEntity<List<Ride>> getAllRidesByDriverId(@PathVariable("id") long driverId);
 }

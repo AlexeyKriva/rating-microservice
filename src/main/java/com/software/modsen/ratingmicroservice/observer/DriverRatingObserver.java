@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 public class DriverRatingObserver implements RatingObserver {
     private RideClient rideClient;
     private DriverRatingClient driverRatingClient;
+
     @Override
     public void updateRatingSource(RatingInfoDto ratingInfoDto) {
         if (ratingInfoDto.getRatingSource().equals(Source.PASSENGER)) {

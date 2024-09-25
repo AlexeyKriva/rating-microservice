@@ -1,7 +1,6 @@
 package com.software.modsen.ratingmicroservice.entities.rating.rating_source;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +9,7 @@ import lombok.Getter;
 public class RatingSourcePatchDto {
     @JsonProperty("rating_id")
     private Long ratingId;
+
     @JsonProperty("source")
     private Source source;
 }

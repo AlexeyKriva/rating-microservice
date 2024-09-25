@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface RatingSourceRepository extends JpaRepository<RatingSource, Long> {
     Optional<RatingSource> findRatingSourceById(long id);
+
     Optional<RatingSource> findRatingSourceByRatingIdAndSource(long ratingId, Source ratingSource);
 }
