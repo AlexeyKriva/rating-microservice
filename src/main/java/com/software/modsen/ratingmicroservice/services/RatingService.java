@@ -15,9 +15,16 @@ import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
 import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
 
@@ -84,6 +91,9 @@ public class RatingService {
         return userRatings;
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Rating saveRating(Source ratingSource, RatingDto ratingDto) {
         Rating newRating = RATING_MAPPER.fromRatingDtoToRating(ratingDto);
 
@@ -96,6 +106,9 @@ public class RatingService {
         return newRating;
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Rating updateRating(long id, RatingDto ratingDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
 
@@ -110,6 +123,9 @@ public class RatingService {
         }).orElseThrow(() -> new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE)));
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Rating patchRating(long id, RatingPatchDto ratingPatchDto) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
 
@@ -128,6 +144,8 @@ public class RatingService {
         throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
     }
 
+    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
+    @Transactional
     public void deleteRatingById(long id) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
 
@@ -137,5 +155,32 @@ public class RatingService {
                     throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
                 }
         );
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForSaveAndPut(DataAccessException exception,
+                                                                          RatingDto ratingDto) {
+        return new ResponseEntity<>(CANNOT_SAVE_RATING_MESSAGE + ratingDto.toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForPatch(DataAccessException exception,
+                                                                     RatingPatchDto ratingPatchDto) {
+        return new ResponseEntity<>(CANNOT_PATCH_RATING_MESSAGE + ratingPatchDto.toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForDelete(DataAccessException exception,
+                                                                      long id) {
+        return new ResponseEntity<>(CANNOT_DELETE_RATING_MESSAGE + id,
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> feignExceptionRecover(FeignException exception) {
+        return new ResponseEntity<>(FEIGN_CANNOT_CONNECT_MESSAGE + exception.contentUTF8(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

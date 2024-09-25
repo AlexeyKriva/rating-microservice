@@ -3,10 +3,12 @@ package com.software.modsen.ratingmicroservice.entities.rating;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class RatingPatchDto {
     @JsonProperty("ride_id")
     private Long rideId;
