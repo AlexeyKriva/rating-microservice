@@ -22,6 +22,8 @@ spring:
     default-schema: public
     contexts: development
     enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
 
 eureka:
   client:
@@ -34,3 +36,4 @@ logging:
       netflix:
         eureka: off
         discovery: off
+
