@@ -2,13 +2,24 @@ server:
   port: 8084
 
 spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable:
+          idempotence: true
+
   application:
     name: rating-microservice
+
   datasource:
     url: jdbc:postgresql://localhost:5432/cab-aggregator-db
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: 98479847
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,13 +28,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
+
   liquibase:
     change-log: classpath:db/changelog/main-changelog.xml
     default-schema: public
     contexts: development
     enabled: true
-  kafka:
-    bootstrap-servers: localhost:9092
 
 eureka:
   client:

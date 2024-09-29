@@ -1,53 +1,59 @@
 package com.software.modsen.ratingmicroservice.configs.kafka;
 
 import com.software.modsen.ratingmicroservice.entities.driver.DriverRatingDto;
-import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRatingDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapAddress;
+
+    @Value("${spring.kafka.producer.key-serializer}")
+    private String keySerialize;
+
+    @Value("${spring.kafka.producer.value-serializer}")
+    private String valueSerializer;
+
+    @Value("${spring.kafka.producer.properties.enable.idempotence}")
+    private String enableIdempotence;
+
+    public Map<String, Object> producerFactory() {
+        Map<String, Object> kafkaProducerProps = new HashMap<>();
+        kafkaProducerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        kafkaProducerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerialize);
+        kafkaProducerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
+        kafkaProducerProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
+
+        return kafkaProducerProps;
+    }
 
     @Bean
     public ProducerFactory<String, PassengerRatingDto> passengerRatingProducerFactory() {
-        Map<String, Object> kafkaProducerProps = new HashMap<>();
-        kafkaProducerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        kafkaProducerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        kafkaProducerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-
-        return new DefaultKafkaProducerFactory<>(kafkaProducerProps);
+        return new DefaultKafkaProducerFactory<>(producerFactory());
     }
 
     @Bean
-    public ProducerFactory<String, DriverRatingDto> driverRatingProducerFactory() {
-        Map<String, Object> kafkaProducerProps = new HashMap<>();
-        kafkaProducerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        kafkaProducerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        kafkaProducerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-
-        return new DefaultKafkaProducerFactory<>(kafkaProducerProps);
-    }
-
-    @Bean
-    public KafkaTemplate<String, PassengerRatingDto> passengerRatingDtoKafkaTemplate() {
+    public KafkaTemplate<String, PassengerRatingDto> passengerRatingKafkaTemplate() {
         return new KafkaTemplate<>(passengerRatingProducerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, DriverRatingDto> driverRatingDtoKafkaTemplate() {
+    public ProducerFactory<String, DriverRatingDto> driverRatingProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, DriverRatingDto> driverRatingKafkaTemplate() {
         return new KafkaTemplate<>(driverRatingProducerFactory());
     }
 }

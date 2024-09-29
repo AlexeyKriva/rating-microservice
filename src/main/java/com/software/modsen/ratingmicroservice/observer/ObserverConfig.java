@@ -14,12 +14,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 public class ObserverConfig {
     @Bean
     public RatingSubject ratingSubject(RatingSourceRepository ratingSourceRepository, RideClient rideClient,
-                                       KafkaTemplate<String, PassengerRatingDto> passengerKafkaTemplate,
-                                       KafkaTemplate<String, DriverRatingDto> driverKafkaTemplate) {
+                                       KafkaTemplate<String, PassengerRatingDto> passengerRatingKafkaTemplate,
+                                       KafkaTemplate<String, DriverRatingDto> driverRatingKafkaTemplate) {
         RatingSubject ratingSubject = new RatingSubject();
         ratingSubject.addRatingObserver(new SourceObserver(ratingSourceRepository));
-        ratingSubject.addRatingObserver(new PassengerRatingObserver(rideClient, passengerKafkaTemplate));
-        ratingSubject.addRatingObserver(new DriverRatingObserver(rideClient, driverKafkaTemplate));
+        ratingSubject.addRatingObserver(new PassengerRatingObserver(rideClient, passengerRatingKafkaTemplate));
+        ratingSubject.addRatingObserver(new DriverRatingObserver(rideClient, driverRatingKafkaTemplate));
 
         return ratingSubject;
     }

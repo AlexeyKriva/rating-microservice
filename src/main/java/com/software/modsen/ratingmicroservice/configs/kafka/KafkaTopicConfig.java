@@ -9,11 +9,17 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
     @Bean
     public NewTopic passengerRatingTopic() {
-        return TopicBuilder.name("passenger-rating").build();
+        return TopicBuilder
+                .name("passenger-create-rating-topic")
+                .partitions(1)
+                .build();
     }
 
     @Bean
     public NewTopic driverRatingTopic() {
-        return TopicBuilder.name("driver-rating").build();
+        return TopicBuilder
+                .name("driver-create-rating-topic")
+                .partitions(1)
+                .build();
     }
 }

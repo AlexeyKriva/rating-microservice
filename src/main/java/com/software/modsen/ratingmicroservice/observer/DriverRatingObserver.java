@@ -21,9 +21,10 @@ public class DriverRatingObserver implements RatingObserver {
         if (ratingInfoDto.getRatingSource().equals(Source.PASSENGER)) {
             ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingInfoDto.getRating().getRide().getId());
 
-            driverKafkaTemplate.send(new KafkaTopicConfig().driverRatingTopic().name(),
-                    new DriverRatingDto(rideFromDb.getBody().getDriver().getId(),
-                    ratingInfoDto.getRating().getRatingValue()));
+            DriverRatingDto driverRatingMessageValue = new DriverRatingDto(rideFromDb.getBody().getDriver().getId(),
+                    ratingInfoDto.getRating().getRatingValue());
+
+            driverKafkaTemplate.send("driver-create-rating-topic", driverRatingMessageValue);
         }
     }
 }
