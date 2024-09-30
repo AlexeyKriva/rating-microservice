@@ -3,6 +3,7 @@ package com.software.modsen.ratingmicroservice.controllers;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourceDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourcePatchDto;
+import com.software.modsen.ratingmicroservice.mappers.RatingSourceMapper;
 import com.software.modsen.ratingmicroservice.services.RatingSourceService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RatingSourceController {
     private RatingSourceService ratingSourceService;
+    private final RatingSourceMapper RATING_SOURCE_MAPPER = RatingSourceMapper.INSTANCE;
 
     @GetMapping
     public ResponseEntity<List<RatingSource>> getAllRatingSources() {
@@ -31,19 +33,19 @@ public class RatingSourceController {
     public ResponseEntity<RatingSource> updateRatingSourceById(@PathVariable("id") long id,
                                                                @Valid
                                                                @RequestBody RatingSourceDto ratingSourceDto) {
-        return ResponseEntity.ok(ratingSourceService.updateRatingSource(id, ratingSourceDto));
+        return ResponseEntity.ok(ratingSourceService.updateRatingSource(
+                id,
+                ratingSourceDto.getRatingId(),
+                RATING_SOURCE_MAPPER.fromRatingSourceDtoToRatingSource(ratingSourceDto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<RatingSource> patchRatingSourceById(@PathVariable("id") long id,
                                                               @Valid
                                                               @RequestBody RatingSourcePatchDto ratingSourcePatchDto) {
-        return ResponseEntity.ok(ratingSourceService.patchRatingSource(id, ratingSourcePatchDto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRatingSourceById(@PathVariable("id") long id) {
-        ratingSourceService.deleteRatingSourceById(id);
-        return ResponseEntity.ok("Rating source was successfully deleted by id " + id);
+        return ResponseEntity.ok(ratingSourceService.patchRatingSource(
+                id,
+                ratingSourcePatchDto.getRatingId(),
+                RATING_SOURCE_MAPPER.fromRatingSourcePatchDtoToRatingSource(ratingSourcePatchDto)));
     }
 }

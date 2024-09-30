@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,7 +32,6 @@ import java.util.Optional;
 public class RatingSourceService {
     private RatingSourceRepository ratingSourceRepository;
     private RatingRepository ratingRepository;
-    private final RatingSourceMapper RATING_SOURCE_MAPPER = RatingSourceMapper.INSTANCE;
 
     public List<RatingSource> getAllRatingSources() {
         return ratingSourceRepository.findAll();
@@ -47,15 +47,13 @@ public class RatingSourceService {
 
     @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     @Transactional
-    public RatingSource updateRatingSource(long id, RatingSourceDto ratingSourceDto) {
-        Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingSourceDto.getRatingId());
+    public RatingSource updateRatingSource(long id, Long ratingId, RatingSource updatingRatingSource) {
+        Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingId);
 
         if (ratingFromDb.isPresent()) {
             Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
 
             if (ratingSourceFromDb.isPresent()) {
-                RatingSource updatingRatingSource =
-                        RATING_SOURCE_MAPPER.fromRatingSourceDtoToRatingSource(ratingSourceDto);
 
                 updatingRatingSource.setId(id);
                 updatingRatingSource.setRating(ratingFromDb.get());
@@ -71,60 +69,30 @@ public class RatingSourceService {
 
     @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     @Transactional
-    public RatingSource patchRatingSource(long id, RatingSourcePatchDto ratingSourcePatchDto) {
-        Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingSourcePatchDto.getRatingId());
-
-        if (ratingFromDb.isPresent()) {
-            Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
-
-            if (ratingSourceFromDb.isPresent()) {
-                RatingSource updatingRatingSource = ratingSourceFromDb.get();
-
-                RATING_SOURCE_MAPPER.updateRatingSourceFromRatingSourcePatchDto(ratingSourcePatchDto,
-                        updatingRatingSource);
-
-                if (ratingSourcePatchDto.getRatingId() != null) {
-                    updatingRatingSource.setRating(ratingFromDb.get());
-                }
-
-                return ratingSourceRepository.save(updatingRatingSource);
-            }
-
-            throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);
-        }
-
-        throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
-    }
-
-    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    @Transactional
-    public void deleteRatingSourceById(long id) {
+    public RatingSource patchRatingSource(long id, Long ratingId, RatingSource updatingRatingSource) {
         Optional<RatingSource> ratingSourceFromDb = ratingSourceRepository.findRatingSourceById(id);
 
-        ratingSourceFromDb.ifPresentOrElse(
-                ratingSource -> ratingSourceRepository.deleteById(id),
-                () -> { throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);}
-        );
-    }
+        if (ratingSourceFromDb.isPresent()) {
+            updatingRatingSource.setId(id);
 
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForSaveAndPut(DataAccessException exception,
-                                                                          RatingSourceDto ratingSourceDto) {
-        return new ResponseEntity<>(CANNOT_SAVE_RATING_SOURCE_MESSAGE + ratingSourceDto.toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+            Optional<Rating> ratingFromDb;
 
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForPatch(DataAccessException exception,
-                                                                     RatingSourcePatchDto ratingSourcePatchDto) {
-        return new ResponseEntity<>(CANNOT_PATCH_RATING_SOURCE_MESSAGE + ratingSourcePatchDto.toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+            ratingFromDb = ratingRepository.findRatingById(Objects.requireNonNullElseGet(ratingId,
+                    () -> ratingSourceFromDb.get().getRating().getId()));
 
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForDelete(DataAccessException exception,
-                                                                      long id) {
-        return new ResponseEntity<>(CANNOT_DELETE_RATING_SOURCE_MESSAGE + id,
-                HttpStatus.INTERNAL_SERVER_ERROR);
+            if (ratingFromDb.isPresent()) {
+                updatingRatingSource.setRating(ratingFromDb.get());
+            } else {
+                throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
+            }
+
+            if (updatingRatingSource.getSource() == null) {
+                updatingRatingSource.setSource(ratingSourceFromDb.get().getSource());
+            }
+
+            return ratingSourceRepository.save(updatingRatingSource);
+        }
+
+        throw new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE);
     }
 }

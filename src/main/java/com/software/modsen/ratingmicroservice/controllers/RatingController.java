@@ -4,6 +4,7 @@ import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
 import com.software.modsen.ratingmicroservice.services.RatingService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RatingController {
     private RatingService ratingService;
+    private final RatingMapper RATING_MAPPER = RatingMapper.INSTANCE;
 
     @GetMapping
     public ResponseEntity<List<Rating>> getAllRatings() {
@@ -46,19 +48,28 @@ public class RatingController {
     public ResponseEntity<Rating> saveRating(@RequestParam("ratingSource") Source ratingSource,
                                              @Valid @RequestBody RatingDto ratingDto) {
         System.out.println(ratingDto);
-        return ResponseEntity.ok(ratingService.saveRating(ratingSource, ratingDto));
+        return ResponseEntity.ok(ratingService.saveRating(
+                ratingSource,
+                ratingDto.getRideId(),
+                RATING_MAPPER.fromRatingDtoToRating(ratingDto)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Rating> updateRatingById(@PathVariable("id") long id,
                                                    @Valid @RequestBody RatingDto ratingDto) {
-        return ResponseEntity.ok(ratingService.updateRating(id, ratingDto));
+        return ResponseEntity.ok(ratingService.updateRating(
+                id,
+                ratingDto.getRideId(),
+                RATING_MAPPER.fromRatingDtoToRating(ratingDto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Rating> patchRatingById(@PathVariable("id") long id,
                                                   @Valid @RequestBody RatingPatchDto ratingPatchDto) {
-        return ResponseEntity.ok(ratingService.patchRating(id, ratingPatchDto));
+        return ResponseEntity.ok(ratingService.patchRating(
+                id,
+                ratingPatchDto.getRideId(),
+                RATING_MAPPER.fromRatingPatchDtoToRating(ratingPatchDto)));
     }
 
     @DeleteMapping("/{id}")
