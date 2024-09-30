@@ -17,6 +17,7 @@ public class RatingSubject {
     }
 
     public void notifyObservers(RatingInfo ratingInfo) {
+        System.out.println("Here");
         for (RatingObserver ratingObserver: ratingObservers) {
             ratingObserver.updateRatingSource(ratingInfo);
         }
