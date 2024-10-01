@@ -1,7 +1,7 @@
 package com.software.modsen.ratingmicroservice.clients;
 
 import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRating;
-import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRatingDto;
+import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRatingMessage;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -13,5 +13,5 @@ public interface PassengerRatingClient {
     @PutMapping
     ResponseEntity<PassengerRating> updatePassengerRating(@Valid
                                                           @RequestBody
-                                                          PassengerRatingDto passengerRatingDto);
+                                                          PassengerRatingMessage passengerRatingDto);
 }

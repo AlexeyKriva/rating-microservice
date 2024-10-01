@@ -1,7 +1,7 @@
 package com.software.modsen.ratingmicroservice.clients;
 
 import com.software.modsen.ratingmicroservice.entities.driver.DriverRating;
-import com.software.modsen.ratingmicroservice.entities.driver.DriverRatingDto;
+import com.software.modsen.ratingmicroservice.entities.driver.DriverRatingMessage;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -13,5 +13,5 @@ public interface DriverRatingClient {
     @PutMapping
     ResponseEntity<DriverRating> updateDriverRating(@Valid
                                                     @RequestBody
-                                                    DriverRatingDto driverRatingDto);
+                                                    DriverRatingMessage driverRatingMessage);
 }

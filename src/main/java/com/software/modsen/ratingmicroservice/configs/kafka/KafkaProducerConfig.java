@@ -1,7 +1,7 @@
 package com.software.modsen.ratingmicroservice.configs.kafka;
 
-import com.software.modsen.ratingmicroservice.entities.driver.DriverRatingDto;
-import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRatingDto;
+import com.software.modsen.ratingmicroservice.entities.driver.DriverRatingMessage;
+import com.software.modsen.ratingmicroservice.entities.passenger.PassengerRatingMessage;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,22 +38,22 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, PassengerRatingDto> passengerRatingProducerFactory() {
+    public ProducerFactory<String, PassengerRatingMessage> passengerRatingProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, PassengerRatingDto> passengerRatingKafkaTemplate() {
+    public KafkaTemplate<String, PassengerRatingMessage> passengerRatingKafkaTemplate() {
         return new KafkaTemplate<>(passengerRatingProducerFactory());
     }
 
     @Bean
-    public ProducerFactory<String, DriverRatingDto> driverRatingProducerFactory() {
+    public ProducerFactory<String, DriverRatingMessage> driverRatingProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, DriverRatingDto> driverRatingKafkaTemplate() {
+    public KafkaTemplate<String, DriverRatingMessage> driverRatingKafkaTemplate() {
         return new KafkaTemplate<>(driverRatingProducerFactory());
     }
 }
