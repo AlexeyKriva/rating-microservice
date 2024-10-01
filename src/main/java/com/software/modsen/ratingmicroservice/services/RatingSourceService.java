@@ -1,22 +1,14 @@
 package com.software.modsen.ratingmicroservice.services;
 
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
-import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
-import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourceDto;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourcePatchDto;
 import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException;
 import com.software.modsen.ratingmicroservice.exceptions.RatingSourceNotFoundException;
-import com.software.modsen.ratingmicroservice.mappers.RatingSourceMapper;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,7 @@
 package com.software.modsen.ratingmicroservice.entities.rating;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +11,8 @@ import org.hibernate.validator.constraints.Range;
 @Getter
 @AllArgsConstructor
 @ToString
-public class    RatingDto {
+@Schema(description = "Rating entity.")
+public class RatingDto {
     @NotNull(message = "Ride id cannot be null.")
     @JsonProperty("ride_id")
     private Long rideId;

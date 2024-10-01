@@ -18,12 +18,4 @@ public class ErrorMessage {
 
     public static final String PASSENGER_HAS_NOT_RATINGS_MESSAGE = "The passenger has not left any ratings yet.";
     public static final String DRIVER_HAS_NOT_RATINGS_MESSAGE = "The driver has not left any ratings yet.";
-
-    public static final String CANNOT_SAVE_RATING_MESSAGE = "Unsuccessful attempt to save rating ";
-    public static final String CANNOT_PATCH_RATING_MESSAGE = "Unsuccessful attempt to patch rating ";
-    public static final String CANNOT_DELETE_RATING_MESSAGE = "Unsuccessful attempt to delete rating with id ";
-    public static final String CANNOT_SAVE_RATING_SOURCE_MESSAGE = "Unsuccessful attempt to save rating source ";
-    public static final String CANNOT_PATCH_RATING_SOURCE_MESSAGE = "Unsuccessful attempt to patch rating source ";
-    public static final String CANNOT_DELETE_RATING_SOURCE_MESSAGE = "Unsuccessful attempt to delete rating source" +
-            " with id ";
 }

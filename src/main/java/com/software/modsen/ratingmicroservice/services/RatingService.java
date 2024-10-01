@@ -2,9 +2,7 @@ package com.software.modsen.ratingmicroservice.services;
 
 import com.software.modsen.ratingmicroservice.clients.RideClient;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
-import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingInfo;
-import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
