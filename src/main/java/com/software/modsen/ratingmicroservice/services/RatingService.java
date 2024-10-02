@@ -6,6 +6,7 @@ import com.software.modsen.ratingmicroservice.entities.rating.RatingInfo;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
+import com.software.modsen.ratingmicroservice.exceptions.DatabaseConnectionRefusedException;
 import com.software.modsen.ratingmicroservice.exceptions.DriverHasNotRatingsException;
 import com.software.modsen.ratingmicroservice.exceptions.PassengerHasNotRatingsException;
 import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException;
@@ -13,10 +14,13 @@ import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataAccessException;
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +40,18 @@ public class RatingService {
     private RideClient rideClient;
     private RatingSubject ratingSubject;
 
+    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Rating> getAllRatings() {
         return ratingRepository.findAll();
     }
 
+    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public Rating getRatingById(long id) {
         return ratingRepository.findRatingById(id)
                 .orElseThrow(() -> new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE));
     }
 
+    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Rating> getAllRatingsByPassengerIdAndBySource(long passengerId, Source ratingSource) {
         List<Ride> ridesFromDb = rideClient.getAllRidesByPassengerId(passengerId).getBody();
         List<Rating> passengerRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
@@ -56,6 +63,7 @@ public class RatingService {
         return passengerRatings;
     }
 
+    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Rating> getAllRatingsByDriverIdAndBySource(long driverId, Source ratingSource) {
         List<Ride> ridesFromDb = rideClient.getAllRidesByDriverId(driverId).getBody();
         List<Rating> driverRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
@@ -67,6 +75,7 @@ public class RatingService {
         return driverRatings;
     }
 
+    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     private List<Rating> getAllRatingsBySource(Source ratingSource, List<Ride> ridesFromDb) {
         List<Rating> userRatings = new ArrayList<>();
 
@@ -86,8 +95,7 @@ public class RatingService {
         return userRatings;
     }
 
-    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
-            backoff = @Backoff(delay = 500))
+    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Rating saveRating(Source ratingSource, Long rideId, Rating newRating) {
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
@@ -100,8 +108,7 @@ public class RatingService {
         return newRating;
     }
 
-    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
-            backoff = @Backoff(delay = 500))
+    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Rating updateRating(long id, Long rideId, Rating updatingRating) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
@@ -118,8 +125,7 @@ public class RatingService {
         throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
     }
 
-    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
-            backoff = @Backoff(delay = 500))
+    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Rating patchRating(long id, Long rideId, Rating updatingRating) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
@@ -147,7 +153,7 @@ public class RatingService {
         throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
     }
 
-    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
+    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public void deleteRatingById(long id) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
@@ -161,5 +167,21 @@ public class RatingService {
                     throw new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE);
                 }
         );
+    }
+
+    @Recover
+    public Rating fallbackPostgresHandle(Throwable throwable) {
+        if (throwable instanceof FeignException) {
+            throw (FeignException) throwable;
+        } else if (throwable instanceof DataIntegrityViolationException) {
+            throw (DataIntegrityViolationException) throwable;
+        }
+
+        throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_UPDATE_DATA_MESSAGE);
+    }
+
+    @Recover
+    public List<Rating> recoverToPSQLException(Throwable throwable) {
+        throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_GET_DATA_MESSAGE);
     }
 }

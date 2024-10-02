@@ -18,4 +18,10 @@ public class ErrorMessage {
 
     public static final String PASSENGER_HAS_NOT_RATINGS_MESSAGE = "The passenger has not left any ratings yet.";
     public static final String DRIVER_HAS_NOT_RATINGS_MESSAGE = "The driver has not left any ratings yet.";
+
+    public static final String BAD_CONNECTION_TO_DATABASE_MESSAGE = "Unsuccessful attempt to connect to the database. " +
+            "Please, wait and try again later.";
+
+    public static final String CANNOT_GET_DATA_MESSAGE = " For this reason you cannot get the data.";
+    public static final String CANNOT_UPDATE_DATA_MESSAGE = " For this reason you cannot update the data.";
 }
