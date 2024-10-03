@@ -35,6 +35,15 @@ spring:
     contexts: development
     enabled: true
 
+feign:
+  client:
+    passenger:
+      url: ${PASSENGER_RATING_SERVER_URL:http://localhost:8081/api/passenger/rating}
+    driver:
+      url: ${DRIVER_RATING_SERVER_URL:http://localhost:8082/api/driver/rating}
+    ride:
+      url: ${RIDE_SERVER_URL:http://localhost:8083/api/ride}
+
 eureka:
   client:
     service-url:
@@ -46,4 +55,3 @@ logging:
       netflix:
         eureka: off
         discovery: off
-
