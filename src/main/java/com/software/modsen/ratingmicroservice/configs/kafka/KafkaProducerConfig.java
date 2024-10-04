@@ -22,13 +22,15 @@ import java.util.Map;
 public class KafkaProducerConfig {
     private Environment environment;
 
+    @Bean
     public Map<String, Object> producerFactory() {
         Map<String, Object> kafkaProducerProps = new HashMap<>();
         kafkaProducerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 environment.getProperty("spring.kafka.producer.bootstrap-servers"));
         kafkaProducerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         kafkaProducerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        //kafkaProducerProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
+        kafkaProducerProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG,
+                environment.getProperty("spring.kafka.producer.properties.enable.idempotence"));
 
         return kafkaProducerProps;
     }
