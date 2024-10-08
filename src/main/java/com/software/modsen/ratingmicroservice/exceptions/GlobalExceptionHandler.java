@@ -17,6 +17,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.software.modsen.ratingmicroservice.exceptions.ErrorMessage.*;
 
@@ -100,6 +101,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DriverHasNotRatingsException.class)
     public ResponseEntity<String> driverHasNotRatingsExceptionHandler(DriverHasNotRatingsException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

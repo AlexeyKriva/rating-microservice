@@ -1,6 +1,6 @@
 package com.software.modsen.ratingmicroservice.observer;
 
-import com.software.modsen.ratingmicroservice.entities.rating.RatingInfoDto;
+import com.software.modsen.ratingmicroservice.entities.rating.RatingInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +16,9 @@ public class RatingSubject {
         ratingObservers.remove(ratingObserver);
     }
 
-    public void notifyObservers(RatingInfoDto ratingInfoDto) {
+    public void notifyObservers(RatingInfo ratingInfo) {
         for (RatingObserver ratingObserver: ratingObservers) {
-            ratingObserver.updateRatingSource(ratingInfoDto);
+            ratingObserver.updateRatingSource(ratingInfo);
         }
     }
 }

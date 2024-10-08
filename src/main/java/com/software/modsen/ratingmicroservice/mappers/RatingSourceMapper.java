@@ -15,6 +15,8 @@ public interface RatingSourceMapper {
 
     RatingSource fromRatingSourceDtoToRatingSource(RatingSourceDto ratingSourceDto);
 
+    RatingSource fromRatingSourcePatchDtoToRatingSource(RatingSourcePatchDto ratingSourcePatchDto);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateRatingSourceFromRatingSourcePatchDto(RatingSourcePatchDto ratingSourcePatchDto,
                                                     @MappingTarget RatingSource ratingSource);

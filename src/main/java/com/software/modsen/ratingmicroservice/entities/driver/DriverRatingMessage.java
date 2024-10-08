@@ -1,17 +1,19 @@
-package com.software.modsen.ratingmicroservice.entities.passenger;
+package com.software.modsen.ratingmicroservice.entities.driver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
+@Setter
 @AllArgsConstructor
-public class PassengerRatingDto {
-    @NotNull(message = "Passenger id cannot be null.")
-    @JsonProperty("passenger_id")
-    private Long passengerId;
+@NoArgsConstructor
+@ToString
+public class DriverRatingMessage {
+    @NotNull(message = "Driver id cannot be null.")
+    @JsonProperty("driver_id")
+    private Long driverId;
 
     @NotNull(message = "Rating value cannot be null.")
     @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")
