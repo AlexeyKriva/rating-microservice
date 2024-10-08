@@ -84,7 +84,6 @@ public class RatingController {
             @RequestBody
             @Parameter(description = "Rating entity.")
             RatingDto ratingDto) {
-        System.out.println(ratingDto);
         return ResponseEntity.ok(ratingService.saveRating(
                 ratingSource,
                 ratingDto.getRideId(),

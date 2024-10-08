@@ -113,10 +113,11 @@ public class RatingService {
     public Rating updateRating(long id, Long rideId, Rating updatingRating) {
         Optional<Rating> ratingFromDb = ratingRepository.findById(id);
 
-        ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
-
         if (ratingFromDb.isPresent()) {
             updatingRating.setId(id);
+
+            ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
+
             updatingRating.setRide(rideFromDb.getBody());
 
             return ratingRepository.save(updatingRating);
