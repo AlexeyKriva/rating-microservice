@@ -1,4 +1,4 @@
-package controllers;
+package com.software.modsen.ratingmicroservice.controllers;
 
 import com.software.modsen.ratingmicroservice.controllers.RatingSourceController;
 import com.software.modsen.ratingmicroservice.entities.driver.Driver;

@@ -1,0 +1,75 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="version1-16" author="postgres">
+        <preConditions>
+            <not>
+                <tableExists tableName="ride"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="ride">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="passenger_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_ride_passenger" references="passenger(id)"/>
+            </column>
+            <column name="driver_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_ride_driver" references="driver(id)"/>
+            </column>
+            <column name="from_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ride_status" type="varchar(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_date_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="ride">
+            <column name="passenger_id" value="1"/>
+            <column name="driver_id" value="1"/>
+            <column name="from_address" value="Nezavisimosty 1"/>
+            <column name="to_address" value="Nezavisimosty 2"/>
+            <column name="ride_status" value="CREATED"/>
+            <column name="order_date_time" value="2023-10-11 12:00:00"/>
+            <column name="price" value="100"/>
+            <column name="currency" value="BYN"/>
+        </insert>
+        <insert tableName="ride">
+            <column name="passenger_id" value="2"/>
+            <column name="driver_id" value="2"/>
+            <column name="from_address" value="Nezavisimosty 3"/>
+            <column name="to_address" value="Nezavisimosty 4"/>
+            <column name="ride_status" value="COMPLETED"/>
+            <column name="order_date_time" value="2022-10-11 12:00:00"/>
+            <column name="price" value="100"/>
+            <column name="currency" value="BYN"/>
+        </insert>
+        <insert tableName="ride">
+            <column name="passenger_id" value="3"/>
+            <column name="driver_id" value="3"/>
+            <column name="from_address" value="Nezavisimosty 5"/>
+            <column name="to_address" value="Nezavisimosty 6"/>
+            <column name="ride_status" value="ACCEPTED"/>
+            <column name="order_date_time" value="2021-10-11 12:00:00"/>
+            <column name="price" value="100"/>
+            <column name="currency" value="BYN"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,4 +1,4 @@
-package services;
+package com.software.modsen.ratingmicroservice.services;
 
 import com.software.modsen.ratingmicroservice.entities.driver.Driver;
 import com.software.modsen.ratingmicroservice.entities.driver.Sex;
