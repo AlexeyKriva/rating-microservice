@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "passenger-microservice", url = "http://localhost:8081/api/passenger/rating")
+@FeignClient(name = "passenger-microservice")
 public interface PassengerRatingClient {
     @PutMapping
     ResponseEntity<PassengerRating> updatePassengerRating(@Valid
