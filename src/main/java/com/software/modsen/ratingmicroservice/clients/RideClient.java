@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "ride-microservice")
+@FeignClient(name = "rides-microservice")
 public interface RideClient {
     @GetMapping("/{id}")
     ResponseEntity<Ride> getRideById(@PathVariable("id") long id);
