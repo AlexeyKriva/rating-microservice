@@ -3,8 +3,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="version1-16" author="postgres">
-        <preConditions>
+    <changeSet id="version1-18" author="postgres">
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="ride"/>
             </not>

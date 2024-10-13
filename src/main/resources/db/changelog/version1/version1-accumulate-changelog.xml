@@ -6,6 +6,6 @@
     <include file="version1-create-table-passenger.xml" relativeToChangelogFile="true"/>
     <include file="version1-create-table-driver-and-car.xml" relativeToChangelogFile="true"/>
     <include file="version1-create-table-ride.xml" relativeToChangelogFile="true"/>
-    <include file="version1-create-table-rating.xml" relativeToChangelogFile="true"/>
+    <include file="version1-create-rating-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
