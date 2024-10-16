@@ -1,14 +1,18 @@
 package com.software.modsen.ratingmicroservice.entities.driver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
+@Setter
 @AllArgsConstructor
-public class DriverRatingDto {
+@NoArgsConstructor
+@ToString
+@Schema(description = "Driver rating entity.")
+public class DriverRatingMessage {
     @NotNull(message = "Driver id cannot be null.")
     @JsonProperty("driver_id")
     private Long driverId;
