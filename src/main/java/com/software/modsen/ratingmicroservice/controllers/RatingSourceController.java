@@ -56,7 +56,7 @@ public class RatingSourceController {
             RatingSourceDto ratingSourceDto) {
         return ResponseEntity.ok(ratingSourceService.updateRatingSource(
                 id,
-                ratingSourceDto.getRatingId(),
+                ratingSourceDto.ratingId(),
                 RATING_SOURCE_MAPPER.fromRatingSourceDtoToRatingSource(ratingSourceDto)));
     }
 
@@ -74,7 +74,7 @@ public class RatingSourceController {
             RatingSourcePatchDto ratingSourcePatchDto) {
         return ResponseEntity.ok(ratingSourceService.patchRatingSource(
                 id,
-                ratingSourcePatchDto.getRatingId(),
+                ratingSourcePatchDto.ratingId(),
                 RATING_SOURCE_MAPPER.fromRatingSourcePatchDtoToRatingSource(ratingSourcePatchDto)));
     }
 }

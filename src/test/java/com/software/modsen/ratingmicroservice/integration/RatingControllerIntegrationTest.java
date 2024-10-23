@@ -9,7 +9,7 @@ import com.software.modsen.ratingmicroservice.entities.driver.car.CarBrand;
 import com.software.modsen.ratingmicroservice.entities.driver.car.CarColor;
 import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
@@ -201,12 +201,12 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
             int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
                     new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
 
-            Source ratingSource;
+            SimpleRatingSource ratingSource;
 
             if ((ratingId & 1) == 1) {
-                ratingSource = Source.PASSENGER;
+                ratingSource = SimpleRatingSource.PASSENGER;
             } else {
-                ratingSource = Source.DRIVER;
+                ratingSource = SimpleRatingSource.DRIVER;
             }
 
             jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
@@ -278,12 +278,12 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
             int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
                     new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
 
-            Source ratingSource;
+            SimpleRatingSource ratingSource;
 
             if ((ratingId & 1) == 1) {
-                ratingSource = Source.DRIVER;
+                ratingSource = SimpleRatingSource.DRIVER;
             } else {
-                ratingSource = Source.PASSENGER;
+                ratingSource = SimpleRatingSource.PASSENGER;
             }
 
             jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
@@ -308,8 +308,8 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
     private String ratingDto =
             "{"
-                    + "\"ride_id\": 1,"
-                    + "\"rating_value\": 2,"
+                    + "\"rideId\": 1,"
+                    + "\"ratingValue\": 2,"
                     + "\"comment\": \"not clean passenger\""
                     + "}";
 
@@ -374,8 +374,8 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
     private String ratingUpdateDto =
             "{"
-                    + "\"ride_id\": 1,"
-                    + "\"rating_value\": 1,"
+                    + "\"rideId\": 1,"
+                    + "\"ratingValue\": 1,"
                     + "\"comment\": \"very bad driver\""
                     + "}";
 
@@ -449,8 +449,8 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
     private String ratingPatchDto =
             "{"
-                    + "\"ride_id\": 2,"
-                    + "\"rating_value\": 5,"
+                    + "\"rideId\": 2,"
+                    + "\"ratingValue\": 5,"
                     + "\"comment\": \"super passenger\""
                     + "}";
 

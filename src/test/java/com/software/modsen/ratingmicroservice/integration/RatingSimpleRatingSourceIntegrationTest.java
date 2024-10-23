@@ -3,7 +3,7 @@ package com.software.modsen.ratingmicroservice.integration;
 import com.software.modsen.ratingmicroservice.RatingMicroserviceApplication;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
 import com.software.modsen.ratingmicroservice.services.RatingService;
@@ -21,10 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = RatingMicroserviceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class RatingSourceIntegrationTest extends TestconteinersConfig {
+public class RatingSimpleRatingSourceIntegrationTest extends TestconteinersConfig {
     @Autowired
     private MockMvc mockMvc;
 
@@ -89,12 +87,12 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
             int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
                     new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
 
-            Source ratingSource;
+            SimpleRatingSource ratingSource;
 
             if ((ratingId & 1) == 1) {
-                ratingSource = Source.PASSENGER;
+                ratingSource = SimpleRatingSource.PASSENGER;
             } else {
-                ratingSource = Source.DRIVER;
+                ratingSource = SimpleRatingSource.DRIVER;
             }
 
             jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
@@ -136,7 +134,7 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
         rating = ratingService.getAllRatings().get(0);
 
         jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
-                + "VALUES(?, ?)", rating.getId(), Source.PASSENGER.name());
+                + "VALUES(?, ?)", rating.getId(), SimpleRatingSource.PASSENGER.name());
 
         RatingSource ratingSource = ratingSourceService.getAllRatingSources().get(0);
 
@@ -172,12 +170,12 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
         int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
                 new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
 
-        Source ratingSource;
+        SimpleRatingSource ratingSource;
 
         if ((ratingId & 1) == 1) {
-            ratingSource = Source.PASSENGER;
+            ratingSource = SimpleRatingSource.PASSENGER;
         } else {
-            ratingSource = Source.DRIVER;
+            ratingSource = SimpleRatingSource.DRIVER;
         }
 
         jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
@@ -185,9 +183,7 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
 
         RatingSource ratingSourceFromDb = ratingSourceService.getAllRatingSources().get(0);
 
-        System.out.println("\n\n\n\n\n========================" + ratingSourceFromDb + "========================\n\n\n\n\n");
-
-        ratingSourceDto = "{\n\"rating_id\": " + ratingSourceFromDb.getRating().getId() + ", " + ratingSourceDto;
+        ratingSourceDto = "{\n\"ratingId\": " + ratingSourceFromDb.getRating().getId() + ", " + ratingSourceDto;
 
         MvcResult mvcResult = mockMvc.perform(put("/api/rating-source/" + ratingSourceFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -207,7 +203,7 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
     }
 
     String ratingSourcePatchDto = "{"
-            + "\"rating_id\": 1,"
+            + "\"ratingId\": 1,"
             + "\"source\": \"PASSENGER\""
             + "}";
 
@@ -224,10 +220,8 @@ public class RatingSourceIntegrationTest extends TestconteinersConfig {
 
         rating = ratingService.getAllRatings().get(0);
 
-        System.out.println("\n\n\n\n\nRating norm\n\n\n\n\n");
-
         jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
-                + "VALUES(?, ?)", rating.getId(), Source.DRIVER.name());
+                + "VALUES(?, ?)", rating.getId(), SimpleRatingSource.DRIVER.name());
 
         RatingSource ratingSource = ratingSourceService.getAllRatingSources().get(0);
 

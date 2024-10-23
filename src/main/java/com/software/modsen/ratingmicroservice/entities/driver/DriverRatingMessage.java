@@ -13,12 +13,12 @@ import org.hibernate.validator.constraints.Range;
 @ToString
 @Schema(description = "Driver rating entity.")
 public class DriverRatingMessage {
-    @NotNull(message = "Driver id cannot be null.")
-    @JsonProperty("driver_id")
-    private Long driverId;
+        @NotNull(message = "Driver id cannot be null.")
+        @JsonProperty("driver_id")
+        private Long driverId;
 
-    @NotNull(message = "Rating value cannot be null.")
-    @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")
-    @JsonProperty("rating_value")
-    private Integer ratingValue;
+        @NotNull(message = "Rating value cannot be null.")
+        @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")
+        @JsonProperty("rating_value")
+        private Integer ratingValue;
 }

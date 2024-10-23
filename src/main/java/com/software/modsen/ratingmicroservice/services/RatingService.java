@@ -4,7 +4,7 @@ import com.software.modsen.ratingmicroservice.clients.RideClient;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingInfo;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.exceptions.DatabaseConnectionRefusedException;
 import com.software.modsen.ratingmicroservice.exceptions.DriverHasNotRatingsException;
@@ -52,7 +52,7 @@ public class RatingService {
     }
 
     @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    public List<Rating> getAllRatingsByPassengerIdAndBySource(long passengerId, Source ratingSource) {
+    public List<Rating> getAllRatingsByPassengerIdAndBySource(long passengerId, SimpleRatingSource ratingSource) {
         List<Ride> ridesFromDb = rideClient.getAllRidesByPassengerId(passengerId).getBody();
         List<Rating> passengerRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
 
@@ -64,7 +64,7 @@ public class RatingService {
     }
 
     @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    public List<Rating> getAllRatingsByDriverIdAndBySource(long driverId, Source ratingSource) {
+    public List<Rating> getAllRatingsByDriverIdAndBySource(long driverId, SimpleRatingSource ratingSource) {
         List<Ride> ridesFromDb = rideClient.getAllRidesByDriverId(driverId).getBody();
         List<Rating> driverRatings = getAllRatingsBySource(ratingSource, ridesFromDb);
 
@@ -76,7 +76,7 @@ public class RatingService {
     }
 
     @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    private List<Rating> getAllRatingsBySource(Source ratingSource, List<Ride> ridesFromDb) {
+    private List<Rating> getAllRatingsBySource(SimpleRatingSource ratingSource, List<Ride> ridesFromDb) {
         List<Rating> userRatings = new ArrayList<>();
 
         for (Ride rideFromDb : ridesFromDb) {
@@ -97,7 +97,7 @@ public class RatingService {
 
     @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
-    public Rating saveRating(Source ratingSource, Long rideId, Rating newRating) {
+    public Rating saveRating(SimpleRatingSource ratingSource, Long rideId, Rating newRating) {
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
 
         newRating.setRide(rideFromDb.getBody());
