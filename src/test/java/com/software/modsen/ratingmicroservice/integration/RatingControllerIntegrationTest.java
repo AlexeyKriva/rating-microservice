@@ -13,6 +13,9 @@ import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Sour
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
+import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
+import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
+import com.software.modsen.ratingmicroservice.services.RatingService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,22 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,9 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = RatingMicroserviceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RatingControllerIntegrationTest {
+public class RatingControllerIntegrationTest extends TestconteinersConfig {
     @Autowired
     private MockMvc mockMvc;
 
@@ -60,51 +53,19 @@ public class RatingControllerIntegrationTest {
     @MockBean
     private RideClient rideClient;
 
-    @Container
-    @ServiceConnection
-    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(
-            DockerImageName.parse("postgres:15"))
-            .withDatabaseName("cab-aggregator-db")
-            .withUsername("postgres")
-            .withPassword("98479847");
+    @Autowired
+    private RatingService ratingService;
 
-    @DynamicPropertySource
-    static void configureDatabase(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-    }
+    @Autowired
+    private RatingRepository ratingRepository;
 
-    static boolean isAlreadySetUped = false;
+    @Autowired
+    private RatingSourceRepository ratingSourceRepository;
 
-    @BeforeEach
-    void setUp() {
-        if (!isAlreadySetUped) {
-            List<Rating> ratings = defaultRatings();
-            long rideId = 1;
-            for (Rating rating : ratings) {
-                jdbcTemplate.update("INSERT INTO rating " +
-                                "(ride_id, rating_value, comment)"
-                                + " VALUES(?, ?, ?)",
-                        rideId++, rating.getRatingValue(), rating.getComment());
-
-                int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
-                        new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
-
-                Source ratingSource;
-
-                if ((ratingId & 1) == 1) {
-                    ratingSource = Source.PASSENGER;
-                } else {
-                    ratingSource = Source.DRIVER;
-                }
-
-                jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
-                        + "VALUES(?, ?)", ratingId, ratingSource.name());
-            }
-
-            isAlreadySetUped = true;
-        }
+    @AfterEach
+    void setDown() {
+        ratingSourceRepository.deleteAll();
+        ratingRepository.deleteAll();
     }
 
     List<Rating> defaultRatings() {
@@ -125,10 +86,18 @@ public class RatingControllerIntegrationTest {
     }
 
     @Test
-    @Order(1)
     @SneakyThrows
     void getAllRatingsTest_ReturnsRatings() {
         //given
+        List<Rating> ratings = defaultRatings();
+        long rideId = 1;
+        for (Rating rating : ratings) {
+            jdbcTemplate.update("INSERT INTO rating " +
+                            "(ride_id, rating_value, comment)"
+                            + " VALUES(?, ?, ?)",
+                    rideId++, rating.getRatingValue(), rating.getComment());
+        }
+
         MvcResult mvcResult = mockMvc.perform(get("/api/rating"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -154,11 +123,20 @@ public class RatingControllerIntegrationTest {
     }
 
     @Test
-    @Order(2)
     @SneakyThrows
     void getRatingByIdTest_ReturnsRating() {
         //given
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/1"))
+        Rating rating = defaultRatings().get(0);
+        long rideId = 1;
+        jdbcTemplate.update("INSERT INTO rating " +
+                        "(ride_id, rating_value, comment)"
+                        + " VALUES(?, ?, ?)",
+                rideId, rating.getRatingValue(), rating.getComment());
+
+        rating = ratingService.getAllRatings().get(0);
+
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/rating/" + rating.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -175,7 +153,6 @@ public class RatingControllerIntegrationTest {
     }
 
     @Test
-    @Order(3)
     @SneakyThrows
     void getAllRatingsByPassengerIdAndBySourceTest_ReturnsRatings() {
         //given
@@ -213,7 +190,30 @@ public class RatingControllerIntegrationTest {
         when(rideClient.getAllRidesByPassengerId(3L))
                 .thenReturn(new ResponseEntity<>(mockRides, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/passenger/3?ratingSource=PASSENGER"))
+        List<Rating> ratings = defaultRatings();
+        long rideId = 1;
+        for (Rating rating : ratings) {
+            jdbcTemplate.update("INSERT INTO rating " +
+                            "(ride_id, rating_value, comment)"
+                            + " VALUES(?, ?, ?)",
+                    rideId++, rating.getRatingValue(), rating.getComment());
+
+            int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
+                    new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
+
+            Source ratingSource;
+
+            if ((ratingId & 1) == 1) {
+                ratingSource = Source.PASSENGER;
+            } else {
+                ratingSource = Source.DRIVER;
+            }
+
+            jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
+                    + "VALUES(?, ?)", ratingId, ratingSource.name());
+        }
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/rating/passenger/3?ratingSource=DRIVER"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -230,7 +230,6 @@ public class RatingControllerIntegrationTest {
     }
 
     @Test
-    @Order(4)
     @SneakyThrows
     void getAllRatingsByDriverIdAndBySourceTest_ReturnsRatings() {
         //given
@@ -268,7 +267,30 @@ public class RatingControllerIntegrationTest {
         when(rideClient.getAllRidesByDriverId(2L))
                 .thenReturn(new ResponseEntity<>(mockRides, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/driver/2?ratingSource=DRIVER"))
+        List<Rating> ratings = defaultRatings();
+        long rideId = 1;
+        for (Rating rating : ratings) {
+            jdbcTemplate.update("INSERT INTO rating " +
+                            "(ride_id, rating_value, comment)"
+                            + " VALUES(?, ?, ?)",
+                    rideId++, rating.getRatingValue(), rating.getComment());
+
+            int ratingId = jdbcTemplate.queryForObject("SELECT id FROM rating WHERE ride_id=? AND rating_value=?",
+                    new Object[]{rideId - 1, rating.getRatingValue()}, Integer.class);
+
+            Source ratingSource;
+
+            if ((ratingId & 1) == 1) {
+                ratingSource = Source.DRIVER;
+            } else {
+                ratingSource = Source.PASSENGER;
+            }
+
+            jdbcTemplate.update("INSERT INTO rating_source (rating_id, source) "
+                    + "VALUES(?, ?)", ratingId, ratingSource.name());
+        }
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/rating/driver/2?ratingSource=PASSENGER"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -292,7 +314,6 @@ public class RatingControllerIntegrationTest {
                     + "}";
 
     @Test
-    @Order(5)
     @SneakyThrows
     void saveRatingTest_ReturnsRating() {
         //given
@@ -359,7 +380,6 @@ public class RatingControllerIntegrationTest {
                     + "}";
 
     @Test
-    @Order(6)
     @SneakyThrows
     void updateRatingByIdTest_ReturnsRating() {
         //given
@@ -397,7 +417,16 @@ public class RatingControllerIntegrationTest {
         when(rideClient.getRideById(1L))
                 .thenReturn(new ResponseEntity<>(mockRide, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/rating/1")
+        Rating rating = defaultRatings().get(0);
+        long rideId = 1;
+        jdbcTemplate.update("INSERT INTO rating " +
+                        "(ride_id, rating_value, comment)"
+                        + " VALUES(?, ?, ?)",
+                rideId, rating.getRatingValue(), rating.getComment());
+
+        rating = ratingService.getAllRatings().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/rating/" + rating.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingUpdateDto))
                 .andExpect(status().isOk())
@@ -426,7 +455,6 @@ public class RatingControllerIntegrationTest {
                     + "}";
 
     @Test
-    @Order(7)
     @SneakyThrows
     void patchRatingByIdTest_ReturnsRating() {
         //given
@@ -464,7 +492,16 @@ public class RatingControllerIntegrationTest {
         when(rideClient.getRideById(2L))
                 .thenReturn(new ResponseEntity<>(mockRide, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(patch("/api/rating/2")
+        Rating rating = defaultRatings().get(0);
+        long rideId = 1;
+        jdbcTemplate.update("INSERT INTO rating " +
+                        "(ride_id, rating_value, comment)"
+                        + " VALUES(?, ?, ?)",
+                rideId, rating.getRatingValue(), rating.getComment());
+
+        rating = ratingService.getAllRatings().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(patch("/api/rating/" + rating.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingPatchDto))
                 .andExpect(status().isOk())
@@ -486,11 +523,19 @@ public class RatingControllerIntegrationTest {
     }
 
     @Test
-    @Order(8)
     @SneakyThrows
     void deleteRatingByIdTest_ReturnsString() {
         //given
-        MvcResult mvcResult = mockMvc.perform(delete("/api/rating/1"))
+        Rating rating = defaultRatings().get(0);
+        long rideId = 1;
+        jdbcTemplate.update("INSERT INTO rating " +
+                        "(ride_id, rating_value, comment)"
+                        + " VALUES(?, ?, ?)",
+                rideId, rating.getRatingValue(), rating.getComment());
+
+        rating = ratingService.getAllRatings().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/rating/" + rating.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -498,6 +543,6 @@ public class RatingControllerIntegrationTest {
         String responseContent = mvcResult.getResponse().getContentAsString();
 
         //then
-        assertEquals("Rating was successfully deleted by id 1", responseContent);
+        assertEquals("Rating was successfully deleted by id " + rating.getId(), responseContent);
     }
 }
