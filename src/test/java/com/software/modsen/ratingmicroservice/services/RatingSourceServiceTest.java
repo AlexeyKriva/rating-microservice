@@ -8,7 +8,7 @@ import com.software.modsen.ratingmicroservice.entities.driver.car.CarColor;
 import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
@@ -16,7 +16,6 @@ import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException
 import com.software.modsen.ratingmicroservice.exceptions.RatingSourceNotFoundException;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
-import com.software.modsen.ratingmicroservice.services.RatingSourceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,7 +43,7 @@ public class RatingSourceServiceTest {
     RatingSourceService ratingSourceService;
 
     RatingSource defaultRating(long ratingSourceId, long ratingId, long rideId, long passengerId, long driverId,
-                               Source ratingSource) {
+                               SimpleRatingSource ratingSource) {
         return new RatingSource(
                 ratingSourceId,
                 new Rating(
@@ -88,8 +87,8 @@ public class RatingSourceServiceTest {
     void getAllRatingSourcesTest_ReturnsRatingSources() {
         //given
         List<RatingSource> ratingSources = List.of(defaultRating(1L, 1L, 1L, 1L,
-                1L, Source.DRIVER), defaultRating(2L, 1L, 1L, 1L,
-                1L, Source.PASSENGER));
+                1L, SimpleRatingSource.DRIVER), defaultRating(2L, 1L, 1L, 1L,
+                1L, SimpleRatingSource.PASSENGER));
         doReturn(ratingSources).when(ratingSourceRepository).findAll();
 
         //when
@@ -106,7 +105,7 @@ public class RatingSourceServiceTest {
         //given
         long ratingSourceId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, 1L, 1L, 1L,
-                1L, Source.DRIVER);
+                1L, SimpleRatingSource.DRIVER);
         doReturn(Optional.of(ratingSource)).when(ratingSourceRepository).findRatingSourceById(ratingSourceId);
 
         //when
@@ -140,7 +139,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         Rating rating = ratingSource.getRating();
         doReturn(Optional.of(rating)).when(ratingRepository).findRatingById(ratingId);
         doReturn(Optional.of(ratingSource)).when(ratingSourceRepository).findRatingSourceById(ratingSourceId);
@@ -165,7 +164,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         doThrow(new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE)).when(ratingRepository).findRatingById(ratingId);
         ratingSource.setId(0);
         ratingSource.setRating(null);
@@ -187,7 +186,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         Rating rating = ratingSource.getRating();
         doReturn(Optional.of(rating)).when(ratingRepository).findRatingById(ratingId);
         doThrow(new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE))
@@ -212,7 +211,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         doReturn(Optional.of(ratingSource)).when(ratingSourceRepository).findRatingSourceById(ratingSourceId);
         Rating rating = ratingSource.getRating();
         doReturn(Optional.of(rating)).when(ratingRepository).findRatingById(ratingId);
@@ -237,7 +236,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         doThrow(new RatingSourceNotFoundException(RATING_SOURCE_NOT_FOUND_MESSAGE))
                 .when(ratingSourceRepository).findRatingSourceById(ratingSourceId);
         ratingSource.setId(0);
@@ -260,7 +259,7 @@ public class RatingSourceServiceTest {
         long ratingSourceId = 1;
         long ratingId = 1;
         RatingSource ratingSource = defaultRating(ratingSourceId, ratingId, 1, 1, 1,
-                Source.PASSENGER);
+                SimpleRatingSource.PASSENGER);
         doReturn(Optional.of(ratingSource)).when(ratingSourceRepository).findRatingSourceById(ratingSourceId);
         doThrow(new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE))
                 .when(ratingRepository).findRatingById(ratingId);

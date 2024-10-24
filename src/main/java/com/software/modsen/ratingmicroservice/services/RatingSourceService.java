@@ -46,7 +46,7 @@ public class RatingSourceService {
         );
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
+    //@CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public RatingSource updateRatingSource(long id, Long ratingId, RatingSource updatingRatingSource) {
         Optional<Rating> ratingFromDb = ratingRepository.findRatingById(ratingId);

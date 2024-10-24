@@ -1,6 +1,5 @@
 package com.software.modsen.ratingmicroservice.controllers;
 
-import com.software.modsen.ratingmicroservice.controllers.RatingSourceController;
 import com.software.modsen.ratingmicroservice.entities.driver.Driver;
 import com.software.modsen.ratingmicroservice.entities.driver.Sex;
 import com.software.modsen.ratingmicroservice.entities.driver.car.Car;
@@ -11,7 +10,7 @@ import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourceDto;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSourcePatchDto;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class RatingSourceControllerTest {
+public class RatingSimpleRatingSourceControllerTest {
     @Mock
     RatingSourceService ratingSourceService;
 
@@ -76,15 +75,15 @@ public class RatingSourceControllerTest {
     }
 
     RatingSource defaultRatingSource() {
-        return new RatingSource(1, ratingWithId(1), Source.DRIVER);
+        return new RatingSource(1, ratingWithId(1), SimpleRatingSource.DRIVER);
     }
 
     @Test
     void getAllRatingSourcesTest_ReturnsRatingSources() {
         //given
         List<RatingSource> ratingSources = List.of(
-                new RatingSource(1L, ratingWithId(1L), Source.PASSENGER),
-                new RatingSource(2L, ratingWithId(2L), Source.DRIVER)
+                new RatingSource(1L, ratingWithId(1L), SimpleRatingSource.PASSENGER),
+                new RatingSource(2L, ratingWithId(2L), SimpleRatingSource.DRIVER)
         );
         doReturn(ratingSources).when(ratingSourceService).getAllRatingSources();
 
@@ -119,12 +118,12 @@ public class RatingSourceControllerTest {
     void updateRatingSourceByIdTest_ReturnsRatingSource() {
         //given
         long ratingSourceId = 1;
-        RatingSourceDto ratingSourceDto = new RatingSourceDto(1L, Source.PASSENGER);
+        RatingSourceDto ratingSourceDto = new RatingSourceDto(1L, SimpleRatingSource.PASSENGER);
         RatingSource ratingSource = ratingSourceMapper.fromRatingSourceDtoToRatingSource(ratingSourceDto);
         ratingSource.setId(ratingSourceId);
-        ratingSource.setRating(ratingWithId(ratingSourceDto.getRatingId()));
+        ratingSource.setRating(ratingWithId(ratingSourceDto.ratingId()));
         doReturn(ratingSource).when(ratingSourceService).updateRatingSource(ratingSourceId,
-                ratingSourceDto.getRatingId(), ratingSourceMapper.fromRatingSourceDtoToRatingSource(ratingSourceDto));
+                ratingSourceDto.ratingId(), ratingSourceMapper.fromRatingSourceDtoToRatingSource(ratingSourceDto));
 
         //when
         ResponseEntity<RatingSource> responseEntity = ratingSourceController.updateRatingSourceById(ratingSourceId,
@@ -135,19 +134,19 @@ public class RatingSourceControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(ratingSource, responseEntity.getBody());
         verify(ratingSourceService).updateRatingSource(ratingSourceId,
-                ratingSourceDto.getRatingId(), ratingSourceMapper.fromRatingSourceDtoToRatingSource(ratingSourceDto));
+                ratingSourceDto.ratingId(), ratingSourceMapper.fromRatingSourceDtoToRatingSource(ratingSourceDto));
     }
 
     @Test
     void patchRatingSourceByIdTest_ReturnsRatingSource() {
         //given
         long ratingSourceId = 1;
-        RatingSourcePatchDto ratingSourcePatchDto = new RatingSourcePatchDto(1L, Source.PASSENGER);
+        RatingSourcePatchDto ratingSourcePatchDto = new RatingSourcePatchDto(1L, SimpleRatingSource.PASSENGER);
         RatingSource ratingSource = ratingSourceMapper.fromRatingSourcePatchDtoToRatingSource(ratingSourcePatchDto);
         ratingSource.setId(ratingSourceId);
-        ratingSource.setRating(ratingWithId(ratingSourcePatchDto.getRatingId()));
+        ratingSource.setRating(ratingWithId(ratingSourcePatchDto.ratingId()));
         doReturn(ratingSource).when(ratingSourceService).patchRatingSource(ratingSourceId,
-                ratingSourcePatchDto.getRatingId(),
+                ratingSourcePatchDto.ratingId(),
                 ratingSourceMapper.fromRatingSourcePatchDtoToRatingSource(ratingSourcePatchDto));
 
         //when
@@ -159,7 +158,7 @@ public class RatingSourceControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(ratingSource, responseEntity.getBody());
         verify(ratingSourceService).patchRatingSource(ratingSourceId,
-                ratingSourcePatchDto.getRatingId(),
+                ratingSourcePatchDto.ratingId(),
                 ratingSourceMapper.fromRatingSourcePatchDtoToRatingSource(ratingSourcePatchDto));
     }
 }

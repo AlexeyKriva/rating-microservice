@@ -3,7 +3,7 @@ package com.software.modsen.ratingmicroservice.controllers;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.mappers.RatingMapper;
 import com.software.modsen.ratingmicroservice.services.RatingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/rating", produces = "application/json")
+@RequestMapping(value = "/api/ratings", produces = "application/json")
 @AllArgsConstructor
 @Tag(name = "Rating controller", description = "Allows to interact with passenger and driver ratings.")
 public class RatingController {
@@ -43,7 +43,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getRatingById(id));
     }
 
-    @GetMapping("/passenger/{id}")
+    @GetMapping("/passengers/{id}")
     @Operation(
             description = "Allows to get all ratings by passenger id and rating source."
     )
@@ -53,11 +53,11 @@ public class RatingController {
             long id,
             @RequestParam("ratingSource")
             @Parameter(description = "Rating source.")
-            Source ratingSource) {
+            SimpleRatingSource ratingSource) {
         return ResponseEntity.ok(ratingService.getAllRatingsByPassengerIdAndBySource(id, ratingSource));
     }
 
-    @GetMapping("/driver/{id}")
+    @GetMapping("/drivers/{id}")
     @Operation(
             description = "Allows to get all ratings by driver id and rating source."
     )
@@ -67,7 +67,7 @@ public class RatingController {
             long id,
             @RequestParam("ratingSource")
             @Parameter(description = "Rating source.")
-            Source ratingSource) {
+            SimpleRatingSource ratingSource) {
         return ResponseEntity.ok(ratingService.getAllRatingsByDriverIdAndBySource(id, ratingSource));
     }
 
@@ -78,7 +78,7 @@ public class RatingController {
     public ResponseEntity<Rating> saveRating(
             @RequestParam("ratingSource")
             @Parameter(description = "Rating source.")
-            Source ratingSource,
+            SimpleRatingSource ratingSource,
 
             @Valid
             @RequestBody
@@ -86,7 +86,7 @@ public class RatingController {
             RatingDto ratingDto) {
         return ResponseEntity.ok(ratingService.saveRating(
                 ratingSource,
-                ratingDto.getRideId(),
+                ratingDto.rideId(),
                 RATING_MAPPER.fromRatingDtoToRating(ratingDto)));
     }
 
@@ -104,7 +104,7 @@ public class RatingController {
             RatingDto ratingDto) {
         return ResponseEntity.ok(ratingService.updateRating(
                 id,
-                ratingDto.getRideId(),
+                ratingDto.rideId(),
                 RATING_MAPPER.fromRatingDtoToRating(ratingDto)));
     }
 
@@ -122,7 +122,7 @@ public class RatingController {
             RatingPatchDto ratingPatchDto) {
         return ResponseEntity.ok(ratingService.patchRating(
                 id,
-                ratingPatchDto.getRideId(),
+                ratingPatchDto.rideId(),
                 RATING_MAPPER.fromRatingPatchDtoToRating(ratingPatchDto)));
     }
 

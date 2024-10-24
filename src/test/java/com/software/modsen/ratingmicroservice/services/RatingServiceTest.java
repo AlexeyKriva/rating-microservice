@@ -10,7 +10,7 @@ import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingInfo;
 import com.software.modsen.ratingmicroservice.entities.rating.rating_source.RatingSource;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
@@ -20,7 +20,6 @@ import com.software.modsen.ratingmicroservice.exceptions.RatingNotFoundException
 import com.software.modsen.ratingmicroservice.observer.RatingSubject;
 import com.software.modsen.ratingmicroservice.repositories.RatingRepository;
 import com.software.modsen.ratingmicroservice.repositories.RatingSourceRepository;
-import com.software.modsen.ratingmicroservice.services.RatingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -253,7 +252,7 @@ public class RatingServiceTest {
     void getAllRatingsByPassengerIdAndBySourceTest_WithoutExceptions_ReturnsRatings() {
         //given
         long passengerId = 1;
-        Source ratingSource = Source.DRIVER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.DRIVER;
         List<Rating> ratings = ratingsWithId(List.of(1L, 2L), List.of(1L, 2L), List.of(1L, 1L), List.of(1L, 2L));
         ResponseEntity<List<Ride>> rides = new ResponseEntity<>(defaultRides(List.of(1L, 1L), List.of(1L, 2L)),
                 HttpStatus.OK);
@@ -288,7 +287,7 @@ public class RatingServiceTest {
     void getAllRatingsByPassengerIdAndBySourceTest_WithPassengerHasNotRatingsExceptions_ReturnsException() {
         //given
         long passengerId = 1;
-        Source ratingSource = Source.DRIVER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.DRIVER;
         ResponseEntity<List<Ride>> rides = new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         doReturn(rides).when(rideClient).getAllRidesByPassengerId(passengerId);
 
@@ -308,7 +307,7 @@ public class RatingServiceTest {
     void getAllRatingsByDriverIdAndBySourceTest_WithoutExceptions_ReturnsRatings() {
         //given
         long driverId = 1;
-        Source ratingSource = Source.PASSENGER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.PASSENGER;
         List<Rating> ratings = ratingsWithId(List.of(1L, 2L), List.of(1L, 2L), List.of(1L, 2L), List.of(1L, 1L));
         ResponseEntity<List<Ride>> rides = new ResponseEntity<>(defaultRides(List.of(1L, 2L), List.of(1L, 1L)),
                 HttpStatus.OK);
@@ -343,7 +342,7 @@ public class RatingServiceTest {
     void getAllRatingsByDriverIdAndBySourceTest_WithPassengerHasNotRatingsExceptions_ReturnsException() {
         //given
         long driverId = 1;
-        Source ratingSource = Source.PASSENGER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.PASSENGER;
         ResponseEntity<List<Ride>> rides = new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         doReturn(rides).when(rideClient).getAllRidesByDriverId(driverId);
 
@@ -362,7 +361,7 @@ public class RatingServiceTest {
     @Test
     void saveRatingTest_WithoutExceptions_ReturnsRating() {
         //given
-        Source ratingSource = Source.DRIVER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.DRIVER;
         long rideId = 1;
         Rating rating = defaultRating(1L, rideId, 1L, 1L);
         ResponseEntity<Ride> rideEntity = new ResponseEntity<>(
