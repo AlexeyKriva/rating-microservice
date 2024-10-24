@@ -102,7 +102,7 @@ public class RatingSimpleRatingSourceIntegrationTest extends TestconteinersConfi
         ratings = ratingService.getAllRatings();
 
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating-source"))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings/sources"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -138,7 +138,7 @@ public class RatingSimpleRatingSourceIntegrationTest extends TestconteinersConfi
 
         RatingSource ratingSource = ratingSourceService.getAllRatingSources().get(0);
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating-source/" + ratingSource.getId()))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings/sources/" + ratingSource.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -185,7 +185,7 @@ public class RatingSimpleRatingSourceIntegrationTest extends TestconteinersConfi
 
         ratingSourceDto = "{\n\"ratingId\": " + ratingSourceFromDb.getRating().getId() + ", " + ratingSourceDto;
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/rating-source/" + ratingSourceFromDb.getId())
+        MvcResult mvcResult = mockMvc.perform(put("/api/ratings/sources/" + ratingSourceFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingSourceDto))
                 .andExpect(status().isOk())
@@ -225,7 +225,7 @@ public class RatingSimpleRatingSourceIntegrationTest extends TestconteinersConfi
 
         RatingSource ratingSource = ratingSourceService.getAllRatingSources().get(0);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/api/rating-source/" + ratingSource.getId())
+        MvcResult mvcResult = mockMvc.perform(patch("/api/ratings/sources/" + ratingSource.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingSourcePatchDto))
                 .andExpect(status().isOk())

@@ -41,7 +41,7 @@ spring:
       client:
         config:
           rides-microservice:
-            url: ${RIDE_SERVER_URL:http://localhost:8083/api/ride}
+            url: ${RIDE_SERVER_URL:http://localhost:8083/api/rides}
 
 eureka:
   client:

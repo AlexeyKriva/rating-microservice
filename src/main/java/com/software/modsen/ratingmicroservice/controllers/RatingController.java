@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/rating", produces = "application/json")
+@RequestMapping(value = "/api/ratings", produces = "application/json")
 @AllArgsConstructor
 @Tag(name = "Rating controller", description = "Allows to interact with passenger and driver ratings.")
 public class RatingController {
@@ -43,7 +43,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getRatingById(id));
     }
 
-    @GetMapping("/passenger/{id}")
+    @GetMapping("/passengers/{id}")
     @Operation(
             description = "Allows to get all ratings by passenger id and rating source."
     )
@@ -57,7 +57,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getAllRatingsByPassengerIdAndBySource(id, ratingSource));
     }
 
-    @GetMapping("/driver/{id}")
+    @GetMapping("/drivers/{id}")
     @Operation(
             description = "Allows to get all ratings by driver id and rating source."
     )

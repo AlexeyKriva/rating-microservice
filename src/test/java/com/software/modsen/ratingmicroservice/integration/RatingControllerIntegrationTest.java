@@ -98,7 +98,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
                     rideId++, rating.getRatingValue(), rating.getComment());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating"))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -136,7 +136,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
         rating = ratingService.getAllRatings().get(0);
 
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/" + rating.getId()))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings/" + rating.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -213,7 +213,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
                     + "VALUES(?, ?)", ratingId, ratingSource.name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/passenger/3?ratingSource=DRIVER"))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings/passengers/3?ratingSource=DRIVER"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -290,7 +290,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
                     + "VALUES(?, ?)", ratingId, ratingSource.name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/rating/driver/2?ratingSource=PASSENGER"))
+        MvcResult mvcResult = mockMvc.perform(get("/api/ratings/drivers/2?ratingSource=PASSENGER"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -351,7 +351,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
         when(rideClient.getRideById(1L))
                 .thenReturn(new ResponseEntity<>(mockRide, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/rating?ratingSource=DRIVER")
+        MvcResult mvcResult = mockMvc.perform(post("/api/ratings?ratingSource=DRIVER")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingDto))
                 .andExpect(status().isOk())
@@ -426,7 +426,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
         rating = ratingService.getAllRatings().get(0);
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/rating/" + rating.getId())
+        MvcResult mvcResult = mockMvc.perform(put("/api/ratings/" + rating.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingUpdateDto))
                 .andExpect(status().isOk())
@@ -501,7 +501,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
         rating = ratingService.getAllRatings().get(0);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/api/rating/" + rating.getId())
+        MvcResult mvcResult = mockMvc.perform(patch("/api/ratings/" + rating.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ratingPatchDto))
                 .andExpect(status().isOk())
@@ -535,7 +535,7 @@ public class RatingControllerIntegrationTest extends TestconteinersConfig {
 
         rating = ratingService.getAllRatings().get(0);
 
-        MvcResult mvcResult = mockMvc.perform(delete("/api/rating/" + rating.getId()))
+        MvcResult mvcResult = mockMvc.perform(delete("/api/ratings/" + rating.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 

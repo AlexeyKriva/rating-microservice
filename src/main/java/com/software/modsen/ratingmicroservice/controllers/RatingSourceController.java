@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/rating-source", produces = "application/json")
+@RequestMapping(value = "/api/ratings/sources", produces = "application/json")
 @AllArgsConstructor
 @Tag(name = "Rating source controller", description = "Allows to interact with rating source.")
 public class RatingSourceController {
