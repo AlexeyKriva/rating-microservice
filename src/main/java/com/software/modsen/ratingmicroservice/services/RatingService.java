@@ -102,7 +102,7 @@ public class RatingService {
 
         newRating.setRide(rideFromDb.getBody());
 
-        ratingRepository.save(newRating);
+        newRating = ratingRepository.save(newRating);
         ratingSubject.notifyObservers(new RatingInfo(ratingSource, newRating));
 
         return newRating;

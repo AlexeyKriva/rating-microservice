@@ -28,6 +28,8 @@ public class PassengerRatingObserver implements RatingObserver{
             PassengerRatingMessage passengerRatingMessage = new PassengerRatingMessage(rideFromDb
                     .getBody().getPassenger().getId(), ratingInfo.getRating().getRatingValue());
 
+            System.out.println("\n\n\n" + passengerRatingMessage + "\n\n\n");
+
             passengerRatingKafkaTemplate.send("passenger-create-rating-topic",
                     String.valueOf(rideFromDb.getBody().getPassenger().getId()),
                     passengerRatingMessage);
