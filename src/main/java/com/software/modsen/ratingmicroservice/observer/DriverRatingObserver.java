@@ -28,8 +28,6 @@ public class DriverRatingObserver implements RatingObserver {
             DriverRatingMessage driverRatingMessageValue = new DriverRatingMessage(rideFromDb.getBody().getDriver().getId(),
                     ratingInfo.getRating().getRatingValue());
 
-            System.out.println("\n\n\n" + driverRatingMessageValue + "\n\n\n");
-
             driverKafkaTemplate.send("driver-create-rating-topic", driverRatingMessageValue);
         }
     }
