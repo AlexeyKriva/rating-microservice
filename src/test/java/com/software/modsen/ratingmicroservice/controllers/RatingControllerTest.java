@@ -1,6 +1,5 @@
 package com.software.modsen.ratingmicroservice.controllers;
 
-import com.software.modsen.ratingmicroservice.controllers.RatingController;
 import com.software.modsen.ratingmicroservice.entities.driver.Driver;
 import com.software.modsen.ratingmicroservice.entities.driver.Sex;
 import com.software.modsen.ratingmicroservice.entities.driver.car.Car;
@@ -10,7 +9,7 @@ import com.software.modsen.ratingmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ratingmicroservice.entities.rating.Rating;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingDto;
 import com.software.modsen.ratingmicroservice.entities.rating.RatingPatchDto;
-import com.software.modsen.ratingmicroservice.entities.rating.rating_source.Source;
+import com.software.modsen.ratingmicroservice.entities.rating.rating_source.SimpleRatingSource;
 import com.software.modsen.ratingmicroservice.entities.ride.Currency;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import com.software.modsen.ratingmicroservice.entities.ride.RideStatus;
@@ -115,7 +114,7 @@ public class RatingControllerTest {
     void getAllRatingsByPassengerIdAndBySourceTest_ReturnsRatings() {
         //given
         long passengerId = 1;
-        Source ratingSource = Source.DRIVER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.DRIVER;
         List<Rating> ratings = defaultRatings(List.of(1L, 1L), List.of(1L, 2L));
         doReturn(ratings).when(ratingService).getAllRatingsByPassengerIdAndBySource(passengerId, ratingSource);
 
@@ -137,7 +136,7 @@ public class RatingControllerTest {
     void getAllRatingsByDriverIdAndBySourceTest_ReturnsRatings() {
         //given
         long driverId = 1;
-        Source ratingSource = Source.PASSENGER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.PASSENGER;
         List<Rating> ratings = defaultRatings(List.of(1L, 2L), List.of(1L, 1L));
         doReturn(ratings).when(ratingService).getAllRatingsByDriverIdAndBySource(driverId, ratingSource);
 
@@ -159,11 +158,11 @@ public class RatingControllerTest {
     void saveRatingTest_ReturnsRating() {
         //given
         RatingDto ratingDto = new RatingDto(1L, 5, "Good ride");
-        Source ratingSource = Source.PASSENGER;
+        SimpleRatingSource ratingSource = SimpleRatingSource.PASSENGER;
         Rating rating = ratingMapper.fromRatingDtoToRating(ratingDto);
         rating.setId(1);
         rating.setRide(rideWithId(1, 1, 1));
-        doReturn(rating).when(ratingService).saveRating(ratingSource, ratingDto.getRideId(),
+        doReturn(rating).when(ratingService).saveRating(ratingSource, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
 
         //when
@@ -173,7 +172,7 @@ public class RatingControllerTest {
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(rating, responseEntity.getBody());
-        verify(ratingService).saveRating(ratingSource, ratingDto.getRideId(),
+        verify(ratingService).saveRating(ratingSource, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
     }
 
@@ -184,8 +183,8 @@ public class RatingControllerTest {
         RatingDto ratingDto = new RatingDto(1L, 5, "Good ride");
         Rating rating = ratingMapper.fromRatingDtoToRating(ratingDto);
         rating.setId(ratingId);
-        rating.setRide(rideWithId(ratingDto.getRideId(), 1, 1));
-        doReturn(rating).when(ratingService).updateRating(ratingId, ratingDto.getRideId(),
+        rating.setRide(rideWithId(ratingDto.rideId(), 1, 1));
+        doReturn(rating).when(ratingService).updateRating(ratingId, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
 
         //when
@@ -195,7 +194,7 @@ public class RatingControllerTest {
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(rating, responseEntity.getBody());
-        verify(ratingService).updateRating(ratingId, ratingDto.getRideId(),
+        verify(ratingService).updateRating(ratingId, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
     }
 
@@ -206,8 +205,8 @@ public class RatingControllerTest {
         RatingPatchDto ratingPatchDto = new RatingPatchDto(1L, 5, "Good ride");
         Rating rating = ratingMapper.fromRatingPatchDtoToRating(ratingPatchDto);
         rating.setId(ratingId);
-        rating.setRide(rideWithId(ratingPatchDto.getRideId(), 1, 1));
-        doReturn(rating).when(ratingService).patchRating(ratingId, ratingPatchDto.getRideId(),
+        rating.setRide(rideWithId(ratingPatchDto.rideId(), 1, 1));
+        doReturn(rating).when(ratingService).patchRating(ratingId, ratingPatchDto.rideId(),
                 ratingMapper.fromRatingPatchDtoToRating(ratingPatchDto));
 
         //when
@@ -217,7 +216,7 @@ public class RatingControllerTest {
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(rating, responseEntity.getBody());
-        verify(ratingService).patchRating(ratingId, ratingPatchDto.getRideId(),
+        verify(ratingService).patchRating(ratingId, ratingPatchDto.rideId(),
                 ratingMapper.fromRatingPatchDtoToRating(ratingPatchDto));
     }
 

@@ -25,5 +25,5 @@ public class RatingSource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)
-    private Source source;
+    private SimpleRatingSource source;
 }

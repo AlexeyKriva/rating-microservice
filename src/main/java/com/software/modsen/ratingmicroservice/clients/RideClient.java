@@ -13,9 +13,9 @@ public interface RideClient {
     @GetMapping("/{id}")
     ResponseEntity<Ride> getRideById(@PathVariable("id") long id);
 
-    @GetMapping("/passenger/{id}")
+    @GetMapping("/passengers/{id}")
     ResponseEntity<List<Ride>> getAllRidesByPassengerId(@PathVariable("id") long passengerId);
 
-    @GetMapping("/driver/{id}")
+    @GetMapping("/drivers/{id}")
     ResponseEntity<List<Ride>> getAllRidesByDriverId(@PathVariable("id") long driverId);
 }
