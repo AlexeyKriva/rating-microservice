@@ -1,5 +1,6 @@
 package com.software.modsen.ratingmicroservice.clients;
 
+import com.software.modsen.ratingmicroservice.configs.FeignConfig;
 import com.software.modsen.ratingmicroservice.entities.ride.Ride;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "rides-microservice")
+@FeignClient(name = "rides-microservice", configuration = FeignConfig.class)
 public interface RideClient {
     @GetMapping("/{id}")
     ResponseEntity<Ride> getRideById(@PathVariable("id") long id);

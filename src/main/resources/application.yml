@@ -42,6 +42,13 @@ spring:
         config:
           rides-microservice:
             url: ${RIDE_SERVER_URL:http://localhost:8083/api/rides}
+      oauth2:
+        enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URI:http://localhost:8080/realms/cab-agg}
 
 eureka:
   client:
@@ -59,14 +66,12 @@ management:
   endpoints:
     web:
       exposure:
-        include:
-          - health
-          - prometheus
-  prometheus:
-    metrics:
-      export:
-        enabled: true
+        include: 'prometheus, health'
   metrics:
     distribution:
       percentiles-histogram:
         "[http.server.request]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
