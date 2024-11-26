@@ -100,7 +100,7 @@ public class RatingService {
     public Rating saveRating(SimpleRatingSource ratingSource, Long rideId, Rating newRating) {
         ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
 
-        newRating.setRide(rideFromDb.getBody());
+        newRating.setRideId(rideFromDb.getBody().getId());
 
         newRating = ratingRepository.save(newRating);
         ratingSubject.notifyObservers(new RatingInfo(ratingSource, newRating));
@@ -118,7 +118,7 @@ public class RatingService {
 
             ResponseEntity<Ride> rideFromDb = rideClient.getRideById(rideId);
 
-            updatingRating.setRide(rideFromDb.getBody());
+            updatingRating.setRideId(rideFromDb.getBody().getId());
 
             return ratingRepository.save(updatingRating);
         }
@@ -137,9 +137,9 @@ public class RatingService {
             ResponseEntity<Ride> rideFromDb;
 
             rideFromDb = rideClient.getRideById(Objects.requireNonNullElseGet(rideId,
-                    () -> ratingFromDb.get().getRide().getId()));
+                    () -> ratingFromDb.get().getRideId()));
 
-            updatingRating.setRide(rideFromDb.getBody());
+            updatingRating.setRideId(rideFromDb.getBody().getId());
 
             if (updatingRating.getRatingValue() == null) {
                 updatingRating.setRatingValue(ratingFromDb.get().getRatingValue());

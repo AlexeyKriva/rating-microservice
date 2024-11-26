@@ -23,15 +23,15 @@ public class PassengerRatingObserver implements RatingObserver{
             backoff = @Backoff(delay = 500))
     public void updateRatingSource(RatingInfo ratingInfo) {
         if (ratingInfo.getRatingSource().equals(SimpleRatingSource.DRIVER)) {
-            ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingInfo.getRating().getRide().getId());
+            ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingInfo.getRating().getRideId());
 
             PassengerRatingMessage passengerRatingMessage = new PassengerRatingMessage(rideFromDb
-                    .getBody().getPassenger().getId(), ratingInfo.getRating().getRatingValue());
+                    .getBody().getPassengerId(), ratingInfo.getRating().getRatingValue());
 
             System.out.println("\n\n\n" + passengerRatingMessage + "\n\n\n");
 
             passengerRatingKafkaTemplate.send("passenger-create-rating-topic",
-                    String.valueOf(rideFromDb.getBody().getPassenger().getId()),
+                    String.valueOf(rideFromDb.getBody().getPassengerId()),
                     passengerRatingMessage);
         }
     }

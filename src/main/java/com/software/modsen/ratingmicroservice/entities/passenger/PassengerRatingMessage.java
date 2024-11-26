@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.Range;
 public class PassengerRatingMessage {
         @NotNull(message = "Passenger id cannot be null.")
         @JsonProperty("passengerId")
-        private Long passengerId;
+        private String passengerId;
 
         @NotNull(message = "Rating value cannot be null.")
         @Range(min = 1, max = 5, message = "Rating value must be between 1 and 5.")

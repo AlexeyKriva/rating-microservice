@@ -24,13 +24,9 @@ public class Ride {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "passenger_id")
-    private Passenger passenger;
+    private String passengerId;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
+    private Long driverId;
 
     @Column(name = "from_address", nullable = false)
     @Schema(example = "Nezavisimosty 3")

@@ -46,7 +46,7 @@ public class RatingControllerTest {
         ratingMapper = RatingMapper.INSTANCE;
     }
 
-    Passenger passengerWithIdAndIsDeleted(long id, boolean isDeleted) {
+    Passenger passengerWithIdAndIsDeleted(String id, boolean isDeleted) {
         return new Passenger(id, "name" + id, "name" + id + "@gmail.com",
                 "+375299312345", isDeleted);
     }
@@ -59,21 +59,21 @@ public class RatingControllerTest {
     }
 
     Ride rideWithId(long id, long passengerId, long driverId) {
-        return new Ride(id, passengerWithIdAndIsDeleted(passengerId, false),
-                driverWithIdAndIsDeleted(driverId, false),
+        return new Ride(id, "1",
+                1L,
                 "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                 LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                 100f, Currency.BYN);
     }
 
     Rating defaultRating() {
-        return new Rating(1, rideWithId(1, 1, 1), 5, "New comment");
+        return new Rating(1, 1L, 5, "New comment");
     }
 
     List<Rating> defaultRatings(List<Long> passengerIdes, List<Long> driverIdes) {
-        return List.of(new Rating(1, rideWithId(1, passengerIdes.get(0), driverIdes.get(0)),
+        return List.of(new Rating(1, 1L,
                         4, "New comment"),
-                new Rating(2, rideWithId(2, passengerIdes.get(1), driverIdes.get(1)),
+                new Rating(2, 2L,
                         5, "New favourite comment"));
     }
 
@@ -128,7 +128,7 @@ public class RatingControllerTest {
         assertEquals(ratings, responseEntity.getBody());
         verify(ratingService).getAllRatingsByPassengerIdAndBySource(passengerId, ratingSource);
         assertTrue(responseEntity.getBody().stream().allMatch(
-                rating -> rating.getRide().getPassenger().getId() == passengerId
+                rating -> rating.getRideId() == passengerId
         ));
     }
 
@@ -150,7 +150,7 @@ public class RatingControllerTest {
         assertEquals(ratings, responseEntity.getBody());
         verify(ratingService).getAllRatingsByDriverIdAndBySource(driverId, ratingSource);
         assertTrue(responseEntity.getBody().stream().allMatch(
-                rating -> rating.getRide().getDriver().getId() == driverId
+                rating -> rating.getRideId() == driverId
         ));
     }
 
@@ -161,7 +161,7 @@ public class RatingControllerTest {
         SimpleRatingSource ratingSource = SimpleRatingSource.PASSENGER;
         Rating rating = ratingMapper.fromRatingDtoToRating(ratingDto);
         rating.setId(1);
-        rating.setRide(rideWithId(1, 1, 1));
+        rating.setRideId(1L);
         doReturn(rating).when(ratingService).saveRating(ratingSource, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
 
@@ -183,7 +183,7 @@ public class RatingControllerTest {
         RatingDto ratingDto = new RatingDto(1L, 5, "Good ride");
         Rating rating = ratingMapper.fromRatingDtoToRating(ratingDto);
         rating.setId(ratingId);
-        rating.setRide(rideWithId(ratingDto.rideId(), 1, 1));
+        rating.setRideId(1L);
         doReturn(rating).when(ratingService).updateRating(ratingId, ratingDto.rideId(),
                 ratingMapper.fromRatingDtoToRating(ratingDto));
 
@@ -205,7 +205,7 @@ public class RatingControllerTest {
         RatingPatchDto ratingPatchDto = new RatingPatchDto(1L, 5, "Good ride");
         Rating rating = ratingMapper.fromRatingPatchDtoToRating(ratingPatchDto);
         rating.setId(ratingId);
-        rating.setRide(rideWithId(ratingPatchDto.rideId(), 1, 1));
+        rating.setRideId(1L);
         doReturn(rating).when(ratingService).patchRating(ratingId, ratingPatchDto.rideId(),
                 ratingMapper.fromRatingPatchDtoToRating(ratingPatchDto));
 

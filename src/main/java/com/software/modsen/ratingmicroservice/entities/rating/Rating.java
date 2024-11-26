@@ -21,9 +21,7 @@ public class Rating {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ride_id")
-    private Ride ride;
+    private Long rideId;
 
     @Column(name = "rating_value", nullable = false)
     private Integer ratingValue;

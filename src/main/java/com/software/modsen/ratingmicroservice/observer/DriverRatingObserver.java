@@ -23,9 +23,9 @@ public class DriverRatingObserver implements RatingObserver {
             backoff = @Backoff(delay = 500))
     public void updateRatingSource(RatingInfo ratingInfo) {
         if (ratingInfo.getRatingSource().equals(SimpleRatingSource.PASSENGER)) {
-            ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingInfo.getRating().getRide().getId());
+            ResponseEntity<Ride> rideFromDb = rideClient.getRideById(ratingInfo.getRating().getRideId());
 
-            DriverRatingMessage driverRatingMessageValue = new DriverRatingMessage(rideFromDb.getBody().getDriver().getId(),
+            DriverRatingMessage driverRatingMessageValue = new DriverRatingMessage(rideFromDb.getBody().getDriverId(),
                     ratingInfo.getRating().getRatingValue());
 
             driverKafkaTemplate.send("driver-create-rating-topic", driverRatingMessageValue);

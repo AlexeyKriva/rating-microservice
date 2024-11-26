@@ -49,7 +49,7 @@ public class RatingSimpleRatingSourceControllerTest {
         ratingSourceMapper = RatingSourceMapper.INSTANCE;
     }
 
-    Passenger passengerWithIdAndIsDeleted(long id, boolean isDeleted) {
+    Passenger passengerWithIdAndIsDeleted(String id, boolean isDeleted) {
         return new Passenger(id, "name" + id, "name" + id + "@gmail.com",
                 "+375299312345", isDeleted);
     }
@@ -61,16 +61,16 @@ public class RatingSimpleRatingSourceControllerTest {
                 isDeleted), isDeleted);
     }
 
-    Ride rideWithId(long id, long passengerId, long driverId) {
-        return new Ride(id, passengerWithIdAndIsDeleted(passengerId, false),
-                driverWithIdAndIsDeleted(driverId, false),
+    Ride rideWithId(long id, String passengerId, long driverId) {
+        return new Ride(id, "1",
+                1L,
                 "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                 LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                 100f, Currency.BYN);
     }
 
     Rating ratingWithId(long id) {
-        return new Rating(id, rideWithId(1, 1, 1),
+        return new Rating(id, 1L,
                 5, "New comment");
     }
 

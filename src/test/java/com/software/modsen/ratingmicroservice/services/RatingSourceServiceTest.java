@@ -48,36 +48,7 @@ public class RatingSourceServiceTest {
                 ratingSourceId,
                 new Rating(
                         ratingId,
-                        new Ride(
-                                rideId,
-                                new Passenger(
-                                        passengerId,
-                                        "name" + passengerId,
-                                        "name" + passengerId + "@gmail.com",
-                                        "+37529123457" + passengerId,
-                                        false
-                                ),
-                                new Driver(
-                                        driverId,
-                                        "name" + driverId,
-                                        "name" + driverId + "@gmail.com",
-                                        "+37529123457" + driverId,
-                                        Sex.MALE,
-                                        new Car(
-                                                driverId,
-                                                CarColor.GREEN,
-                                                CarBrand.AUDI,
-                                                "123" + driverId + "AB-7",
-                                                false
-                                        ),
-                                        false
-                                ),
-                                "Nezavisimosty " + passengerId,
-                                "Nezavisimosty " + (passengerId + 1),
-                                RideStatus.ACCEPTED,
-                                LocalDateTime.of(2024, 10, 3, 12, 0, 0),
-                                100F,
-                                Currency.BYN),
+                        1L,
                         5,
                         "comment"),
                 ratingSource);

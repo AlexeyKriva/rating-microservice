@@ -58,115 +58,26 @@ public class RatingServiceTest {
                                List<Long> passengerIdes, List<Long> driverIdes) {
         return List.of(new Rating(
                         ratingsIdes.get(0),
-                        new Ride(
-                                rideIdes.get(0),
-                                new Passenger(
-                                        passengerIdes.get(0),
-                                        "name" + passengerIdes.get(0),
-                                        "name" + passengerIdes.get(0) + "@gmail.com",
-                                        "+37529123457" + passengerIdes.get(0),
-                                        false
-                                ),
-                                new Driver(
-                                        driverIdes.get(0),
-                                        "name" + driverIdes.get(0),
-                                        "name" + driverIdes.get(0) + "@gmail.com",
-                                        "+37529123457" + driverIdes.get(0),
-                                        Sex.MALE,
-                                        new Car(
-                                                driverIdes.get(0),
-                                                CarColor.GREEN,
-                                                CarBrand.AUDI,
-                                                "123" + driverIdes.get(0) + "AB-7",
-                                                false
-                                        ),
-                                        false
-                                ),
-                                "Nezavisimosty " + passengerIdes.get(0),
-                                "Nezavisimosty " + (passengerIdes.get(0) + 1),
-                                RideStatus.ACCEPTED,
-                                LocalDateTime.of(2024, 10, 3, 12, 0, 0),
-                                100F,
-                                Currency.BYN
-                        ),
+                        1L,
                         5,
                         "comment"),
                 new Rating(
                         ratingsIdes.get(1),
-                        new Ride(
-                                rideIdes.get(1),
-                                new Passenger(
-                                        passengerIdes.get(1),
-                                        "name" + passengerIdes.get(1),
-                                        "name" + passengerIdes.get(1) + "@gmail.com",
-                                        "+37529123457" + passengerIdes.get(1),
-                                        false
-                                ),
-                                new Driver(
-                                        driverIdes.get(1),
-                                        "name" + driverIdes.get(1),
-                                        "name" + driverIdes.get(1) + "@gmail.com",
-                                        "+37529123457" + driverIdes.get(1),
-                                        Sex.MALE,
-                                        new Car(
-                                                driverIdes.get(1),
-                                                CarColor.GREEN,
-                                                CarBrand.AUDI,
-                                                "123" + driverIdes.get(1) + "AB-7",
-                                                false
-                                        ),
-                                        false
-                                ),
-                                "Nezavisimosty " + passengerIdes.get(1),
-                                "Nezavisimosty " + (passengerIdes.get(1) + 1),
-                                RideStatus.ACCEPTED,
-                                LocalDateTime.of(2024, 10, 3, 12, 0, 0),
-                                100F,
-                                Currency.BYN
-                        ),
+                        2L,
                         5,
                         "comment")
         );
     }
 
-    Rating defaultRating(long ratingId, long rideId, long passengerId, long driverId) {
+    Rating defaultRating(long ratingId, long rideId, String passengerId, long driverId) {
         return new Rating(
                 ratingId,
-                new Ride(
-                        rideId,
-                        new Passenger(
-                                passengerId,
-                                "name" + passengerId,
-                                "name" + passengerId + "@gmail.com",
-                                "+37529123457" + passengerId,
-                                false
-                        ),
-                        new Driver(
-                                driverId,
-                                "name" + driverId,
-                                "name" + driverId + "@gmail.com",
-                                "+37529123457" + driverId,
-                                Sex.MALE,
-                                new Car(
-                                        driverId,
-                                        CarColor.GREEN,
-                                        CarBrand.AUDI,
-                                        "123" + driverId + "AB-7",
-                                        false
-                                ),
-                                false
-                        ),
-                        "Nezavisimosty " + passengerId,
-                        "Nezavisimosty " + (passengerId + 1),
-                        RideStatus.ACCEPTED,
-                        LocalDateTime.of(2024, 10, 3, 12, 0, 0),
-                        100F,
-                        Currency.BYN),
+                1L,
                 5,
                 "comment");
     }
 
-    Passenger passengerWithIdAndIsDeleted(long id, boolean isDeleted) {
+    Passenger passengerWithIdAndIsDeleted(String id, boolean isDeleted) {
         return new Passenger(id, "name" + id, "name" + id + "@gmail.com",
                 "+37529123457" + id, isDeleted);
     }
@@ -181,8 +92,8 @@ public class RatingServiceTest {
         return List.of(
                 new Ride(
                         1,
-                        passengerWithIdAndIsDeleted(passengerIdes.get(0), false),
-                        driverWithIdAndIsDeleted(drivesIdes.get(0), false),
+                        "1",
+                        1L,
                         "Nezavisimosty 1",
                         "Nezavisimosty 2",
                         RideStatus.CREATED,
@@ -191,8 +102,8 @@ public class RatingServiceTest {
                         Currency.BYN),
                 new Ride(
                         2,
-                        passengerWithIdAndIsDeleted(passengerIdes.get(1), false),
-                        driverWithIdAndIsDeleted(drivesIdes.get(1), false),
+                        "2",
+                        2L,
                         "Nezavisimosty 1" ,
                         "Nezavisimosty 2",
                         RideStatus.CREATED,
@@ -222,7 +133,7 @@ public class RatingServiceTest {
     void getRatingByIdTest_WithoutException_ReturnsRating() {
         //given
         long ratingId = 1;
-        Optional<Rating> rating = Optional.of(defaultRating(1, 1, 1, 1));
+        Optional<Rating> rating = Optional.of(defaultRating(1, 1, "1", 1));
         doReturn(rating).when(ratingRepository).findRatingById(ratingId);
 
         //when
@@ -259,8 +170,8 @@ public class RatingServiceTest {
         doReturn(rides).when(rideClient).getAllRidesByPassengerId(passengerId);
         long ratingId = 1;
         for (Ride ride : rides.getBody()) {
-            List<Rating> ratingsByRideId = List.of(defaultRating(ratingId++, ride.getId(), ride.getPassenger().getId(),
-                    ride.getDriver().getId()));
+            List<Rating> ratingsByRideId = List.of(defaultRating(ratingId++, ride.getId(), ride.getPassengerId(),
+                    ride.getDriverId()));
             doReturn(ratingsByRideId).when(ratingRepository).findRatingsByRideId(ride.getId());
             for (Rating rating : ratingsByRideId) {
                 Optional<RatingSource> ratingSourceInstance = Optional.of(
@@ -314,8 +225,8 @@ public class RatingServiceTest {
         doReturn(rides).when(rideClient).getAllRidesByDriverId(driverId);
         long ratingId = 1;
         for (Ride ride : rides.getBody()) {
-            List<Rating> ratingsByRideId = List.of(defaultRating(ratingId++, ride.getId(), ride.getPassenger().getId(),
-                    ride.getDriver().getId()));
+            List<Rating> ratingsByRideId = List.of(defaultRating(ratingId++, ride.getId(), ride.getPassengerId(),
+                    ride.getDriverId()));
             doReturn(ratingsByRideId).when(ratingRepository).findRatingsByRideId(ride.getId());
             for (Rating rating : ratingsByRideId) {
                 Optional<RatingSource> ratingSourceInstance = Optional.of(
@@ -363,15 +274,15 @@ public class RatingServiceTest {
         //given
         SimpleRatingSource ratingSource = SimpleRatingSource.DRIVER;
         long rideId = 1;
-        Rating rating = defaultRating(1L, rideId, 1L, 1L);
+        Rating rating = defaultRating(1L, rideId, "1", 1L);
         ResponseEntity<Ride> rideEntity = new ResponseEntity<>(
-                rating.getRide(), HttpStatus.OK
+                new Ride(), HttpStatus.OK
         );
         doReturn(rideEntity).when(rideClient).getRideById(rideId);
         doReturn(rating).when(ratingRepository).save(rating);
         doNothing().when(ratingSubject).notifyObservers(any(RatingInfo.class));
         rating.setId(0);
-        rating.setRide(null);
+        rating.setRideId(1L);
 
         //when
         Rating ratingData = ratingService.saveRating(ratingSource, rideId, rating);
@@ -389,15 +300,15 @@ public class RatingServiceTest {
         //given
         long ratingId = 1;
         long rideId = 1;
-        Rating rating = defaultRating(ratingId, rideId, 1L, 1L);
+        Rating rating = defaultRating(ratingId, rideId, "1", 1L);
         doReturn(Optional.of(rating)).when(ratingRepository).findById(ratingId);
         ResponseEntity<Ride> rideEntity = new ResponseEntity<>(
-                rating.getRide(), HttpStatus.OK
+                new Ride(), HttpStatus.OK
         );
         doReturn(rideEntity).when(rideClient).getRideById(rideId);
         doReturn(rating).when(ratingRepository).save(rating);
         rating.setId(0);
-        rating.setRide(null);
+        rating.setRideId(1L);
 
         //when
         Rating ratingData = ratingService.updateRating(ratingId, rideId, rating);
@@ -416,10 +327,10 @@ public class RatingServiceTest {
         //given
         long ratingId = 1;
         long rideId = 1;
-        Rating rating = defaultRating(ratingId, rideId, 1L, 1L);
+        Rating rating = defaultRating(ratingId, rideId, "1", 1L);
         doThrow(new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE)).when(ratingRepository).findById(ratingId);
         rating.setId(0);
-        rating.setRide(null);
+        rating.setRideId(1L);
 
         //when
         RatingNotFoundException exception = assertThrows(RatingNotFoundException.class,
@@ -437,15 +348,15 @@ public class RatingServiceTest {
         //given
         long ratingId = 1;
         long rideId = 1;
-        Rating rating = defaultRating(ratingId, rideId, 1L, 1L);
+        Rating rating = defaultRating(ratingId, rideId, "1", 1L);
         doReturn(Optional.of(rating)).when(ratingRepository).findById(ratingId);
         ResponseEntity<Ride> rideEntity = new ResponseEntity<>(
-                rating.getRide(), HttpStatus.OK
+                new Ride(), HttpStatus.OK
         );
         doReturn(rideEntity).when(rideClient).getRideById(rideId);
         doReturn(rating).when(ratingRepository).save(rating);
         rating.setId(0);
-        rating.setRide(null);
+        rating.setRideId(1L);
 
         //when
         Rating ratingData = ratingService.patchRating(ratingId, rideId, rating);
@@ -463,10 +374,10 @@ public class RatingServiceTest {
         //given
         long ratingId = 1;
         long rideId = 1;
-        Rating rating = defaultRating(ratingId, rideId, 1L, 1L);
+        Rating rating = defaultRating(ratingId, rideId, "1", 1L);
         doThrow(new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE)).when(ratingRepository).findById(ratingId);
         rating.setId(0);
-        rating.setRide(null);
+        rating.setRideId(1L);
 
         //when
         RatingNotFoundException exception = assertThrows(RatingNotFoundException.class,
@@ -483,7 +394,7 @@ public class RatingServiceTest {
     void deleteRatingByIdTest_WithoutException_ReturnVoid() {
         //given
         long ratingId = 1;
-        Rating rating = defaultRating(ratingId, 1, 1L, 1L);
+        Rating rating = defaultRating(ratingId, 1, "1", 1L);
         doReturn(Optional.of(rating)).when(ratingRepository).findById(ratingId);
         doNothing().when(ratingSourceRepository).deleteByRatingId(rating.getId());
         doNothing().when(ratingRepository).deleteById(ratingId);
@@ -501,7 +412,7 @@ public class RatingServiceTest {
     void deleteRatingByIdTest_WithoutRatingNotFoundException_ReturnVoid() {
         //given
         long ratingId = 1;
-        Rating rating = defaultRating(ratingId, 1, 1L, 1L);
+        Rating rating = defaultRating(ratingId, 1, "1", 1L);
         doThrow(new RatingNotFoundException(RATING_NOT_FOUND_MESSAGE)).when(ratingRepository).findById(ratingId);
 
         //when
